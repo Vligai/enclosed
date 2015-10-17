@@ -1,5 +1,5 @@
 /*
-  pre cond: name of the machine server is running on, port number, message
+  pre cond: name of the machine server is running on, port number, message Vlad was here
   post cond: sends message to the server, where it is displayed
 */
 #include "sockets.h"
