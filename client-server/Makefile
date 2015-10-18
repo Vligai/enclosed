@@ -7,8 +7,8 @@ OBJ2=$(SRC2:.c=.o)
 RM=rm -f
 INCLPATH= ../../include
 CFLAGS+=-I$(INCLPATH)
-LDFLAGS+= -L../../lib -Wall
-LDLIBS+= -lmy
+LDFLAGS+= -L../../lib -pedantic-errors
+LDLIBS+= -lcrypto -lssl
 
 all:$(NAME1) $(NAME2)
 
