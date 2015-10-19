@@ -1,19 +1,18 @@
 
 /*
-  pre cond: name of the machine server is running on, port number, message
-  post cond: sends message to the server, where it is displayed
+  client side of the password manager
 */
-#include "sockets.h"
+#include "enclosed.h"
 #define _CLIENT_H_
 int sockfd;
+/*called when user disconnects from server*/
 void notime(int sig)
 {
   if(sig == SIGINT)
     {
       puts("\ndiconnecting");
       exit(0);
-    }
-  
+    } 
 }
 void notime2(int sig)
 {
@@ -101,6 +100,7 @@ int main(int argc, char** argv)
   puts("~What would you like to do?");
   puts("~Your options include: ");
   puts("~help -> to view this message again");
+  puts("~exit -> to quit the program");
   puts("~adding more later on");
   while(1)
     {
@@ -109,7 +109,11 @@ int main(int argc, char** argv)
       
       if(n <= 0)
 	  puts("Invalid read");
-
+      if(strncmp(buff, "/exit", 6) == 0)
+	{
+	  puts("exiting server");
+	  exit(0);
+	}
       if(strncmp(buff, "view_passwords", 14) == 0)
 	puts("Here is the password for");
       if(strncmp(buff, "help", 4) == 0)
@@ -121,14 +125,18 @@ int main(int argc, char** argv)
 	  puts("/exit -> to exit manager");
 	  puts("adding more later on");
 	}
-      n = write(sockfd, buff, MAX-6);
-      usleep(3000);
-      n = read(sockfd, buff, MAX-6);
+      else
+	{
+	  n = write(sockfd, buff, MAX-6);
+	  puts("unknown command, type: help to view available actions");
+	  usleep(3000);
+	  n = read(sockfd, buff, MAX-6);
+	}
       if(buff[0] != '~')
 	{
 	  puts("server down");
 	  exit(0);
 	}
     }
-    }  
+}  
 

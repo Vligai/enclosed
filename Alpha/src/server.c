@@ -1,9 +1,8 @@
 /*
-  pre cond: choose port number, which is more than 0 and less than 2^16-1
-  post cond: prints string recied from the client
+  server side of the enclosed-password manager
 */
 #define _SERVER_H_
-#include "sockets.h"
+#include "enclosed.h"
 char nick[MAX];
 char password[MAX];
 void sfault1(int sig)
@@ -15,6 +14,7 @@ void sfault1(int sig)
       exit(0);
     }
 }
+/*callsed when user disconnects from the server*/
 void sfault2(int sig)
 {
   if(sig == SIGINT)
@@ -33,6 +33,7 @@ void compute_md5(char *str, unsigned char digest[16])
   MD5_Update(&ctx, str, strlen(str));
   MD5_Final(digest, &ctx);
 }
+/*main*/
 int main(int argc, char** argv)
 {
   struct sockaddr_in srv;
@@ -48,7 +49,7 @@ int main(int argc, char** argv)
   signal(SIGINT, sfault1);
   if(argc < 2)
     {
-      puts("Use: nport");
+      puts("usage: ./server nport");
       exit(0);
     }
   sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -139,9 +140,12 @@ int main(int argc, char** argv)
 		}
 	      else
 		{
+		  /*
 		  printf("%s",nick);
 		  printf("%s", ": ");
 		  puts(buff);
+		  */
+		  puts("user has input unknown command");
 		}
 	  
 	    }
