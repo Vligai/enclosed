@@ -1,0 +1,16 @@
+Alpha Report
+
+Our Alpha system consists of database, server and a client. Server and a client communicate using sockets, SSL will be implemented later in the development (Beta system). Manager is used using command line arguments inputted by client side, after which server proccesses those commands.
+
+Building running:
+First of all type in 'make re' in order to apply any changes made since last time program was run.
+After which run server then client.
+To launch server simply type in './server ' + your desired port number.
+To launch client type in './client ' + host name + port number of the server.
+
+How client and server work:
+After a successful establishment of connection user will be asked for a user name and a password, which will be sent to a server to be reviewed/compared to the one saved in the database.
+User will be given a set of commands he/she can input, which could be viewed anytime using '/help' command. After user inputs commands they are sent over to server, which checks if it exists: if it exists server will perform appropriate action, if it's not server will output that command is invalid.
+
+Security features implemented:
+For now we will be using md5 hash in order to secure our passwords, as we move through the development we plan to switch to AES-128 for more secure results.
