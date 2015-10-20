@@ -1,6 +1,7 @@
 
 /*
   client side of the password manager
+  regular sockets client, upgrade to SSL in Beta
 */
 #include "enclosed.h"
 #define _CLIENT_H_
@@ -23,6 +24,7 @@ void notime2(int sig)
       exit(0);
     }
 }
+/*main*/
 int main(int argc, char** argv)
 {
   struct sockaddr_in srv;
@@ -35,6 +37,7 @@ int main(int argc, char** argv)
   char nick[MAX];
   char password[MAX];
   signal(SIGINT, notime);
+  /*check for number of arguments when starting a client*/
   if(argc < 3)
     {
       puts("Use: [host] [nport]");
@@ -42,6 +45,7 @@ int main(int argc, char** argv)
     }
   nport = atoi(argv[2]);
   sockfd = socket(AF_INET, SOCK_STREAM, 0);
+  /*check is socket is valid*/
   if (sockfd < 0)
     { 
       puts("invalid socket");
@@ -57,6 +61,7 @@ int main(int argc, char** argv)
   srv.sin_family = AF_INET;
   srv.sin_port = htons(nport);
   memcpy(&srv.sin_addr.s_addr, bserv->h_addr, bserv->h_length);
+  /*check if connection is successful*/
   con = connect(sockfd,  (struct sockaddr *)&srv, sizeof(srv));
   if(con<0)
     {
@@ -64,16 +69,15 @@ int main(int argc, char** argv)
       puts(argv[1]);
       exit(0);
     }
+  /*authentication process*/
   printf("enter username: ");
   n = read(0, nick, MAX-6);
   if(n < 0)
       puts("Invalid socket");
   nick[n-1] = '\0';
-  if(n <= 0)
-    {
-      puts("Invalid nick\n");
-      exit(0);
-    }
+  if(n <= 3)
+      puts("Invalid username, must be at least 3 letters long\n");
+     
   n = write(sockfd, nick, MAX-6);
   signal(SIGINT, notime2);
   usleep(3000);
@@ -83,24 +87,27 @@ int main(int argc, char** argv)
       puts("server down\n");
       exit(0);
     }
+  /*check for password*/
   printf("%s", "enter password: ");
   n = read(0, password, MAX-6);
   if(n < 0)
     puts("Invalid socket");
   password[n-1] = '\0';
-  if(n <= 0)
-    puts("Invalid password");
+  if(n <= 5)
+      puts("Invalid password, must be atleast 5 charachters long");
   n = write(sockfd, password, MAX-6);
   signal(SIGINT, notime2);
   usleep(3000);
   n = read(sockfd, password, MAX-6);
 
-
+  /*introductory message*/
   puts("~Welcome to Enclosed");
   puts("~What would you like to do?");
   puts("~Your options include: ");
-  puts("~help -> to view this message again");
-  puts("~exit -> to quit the program");
+  puts("~/help -> to view this message again");
+  puts("~/exit -> to quit the program");
+  puts("~/view_passes -> to view all saved passwords");
+  puts("~/change_mpassword -> to change master password");
   puts("~adding more later on");
   while(1)
     {
@@ -109,14 +116,16 @@ int main(int argc, char** argv)
       
       if(n <= 0)
 	  puts("Invalid read");
-      if(strncmp(buff, "/exit", 6) == 0)
+      /*check commands just simple commands in alpha*/
+      if(strncmp(buff, "/exit", 5) == 0)
 	{
 	  puts("exiting server");
+	  //free(buff);
 	  exit(0);
 	}
-      if(strncmp(buff, "view_passwords", 14) == 0)
-	puts("Here is the password for");
-      if(strncmp(buff, "help", 4) == 0)
+      if(strncmp(buff, "/view_passes", 12) == 0)
+	puts("Here are your saved passwords");
+      if(strncmp(buff, "/help", 5) == 0)
 	{
 	  puts("Welcome to Enclosed");
 	  puts("What would you like to do?");
@@ -125,6 +134,20 @@ int main(int argc, char** argv)
 	  puts("/exit -> to exit manager");
 	  puts("adding more later on");
 	}
+      if(strncmp(buff, "/change_mpassword", 16) == 0)
+	{
+	  printf("please input current master password: ");
+	  printf("please input new master password: ");
+	}
+      
+      /*
+      if(buff[0] != '~')
+	{
+	  puts("server down");
+	  exit(0);
+	}
+      */
+      /*if user inputs non of the above commands*/
       else
 	{
 	  n = write(sockfd, buff, MAX-6);
@@ -132,11 +155,11 @@ int main(int argc, char** argv)
 	  usleep(3000);
 	  n = read(sockfd, buff, MAX-6);
 	}
-      if(buff[0] != '~')
-	{
-	  puts("server down");
-	  exit(0);
-	}
     }
+  /*freeing buffer, password and nickname*/
+  free(buff);
+  free(password);
+  free(nick);
+  
 }  
 

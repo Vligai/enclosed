@@ -4,7 +4,7 @@
 #ifndef _ENCLOSED_H_
 #define _ENCLOSED_H_
 #include <signal.h>
-#define MAX 1024
+#define MAX 2048
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -12,6 +12,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "openssl/ssl.h"
+#include "openssl/err.h"
 #include <openssl/md5.h>
 #include <errno.h>
 /*functions in client*/
