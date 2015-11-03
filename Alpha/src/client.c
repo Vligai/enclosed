@@ -101,14 +101,14 @@ int main(int argc, char** argv)
   n = read(sockfd, password, MAX-6);
 
   /*introductory message*/
-  puts("~Welcome to Enclosed");
-  puts("~What would you like to do?");
-  puts("~Your options include: ");
-  puts("~/help -> to view this message again");
-  puts("~/exit -> to quit the program");
-  puts("~/view_passes -> to view all saved passwords");
-  puts("~/change_mpassword -> to change master password");
-  puts("~adding more later on");
+  puts("  ~~Welcome to Enclosed");
+  puts("  ~~What would you like to do?");
+  puts("  ~~Your options include: ");
+  puts("  ~~/help -> to view this message again");
+  puts("  ~~/exit -> to quit the program");
+  puts("  ~~/view_passes -> to view all saved passwords");
+  puts("  ~~/change_mpassword -> to change master password");
+  puts("  ~~adding more later on");
   while(1)
     {
       n = read(0, buff, MAX-6);

@@ -1,19 +1,23 @@
 NAME1=client
 NAME2=server
+NAME3=database
 SRC1=client.c
 SRC2=server.c
+SRC3=database.c
 OBJ1=$(SRC1:.c=.o)
 OBJ2=$(SRC2:.c=.o)
+OBJ3=$(SRC3:.c=.o)
 RM=rm -f
-INCLPATH= ../../include
+INCLPATH= ../include
 CFLAGS+=-I$(INCLPATH)
-LDFLAGS+= -L../../lib
+LDFLAGS+= -L../lib
 LDLIBS+= -lcrypto -lssl -Wall -pedantic-errors
 
-all:$(NAME1) $(NAME2)
+all:$(NAME1) $(NAME2) $(NAME3)
 
 $(NAME1):$(OBJ1)
 $(NAME2):$(OBJ2)
+$(NAME3):$(OBJ3)
 
 client:
 

@@ -155,28 +155,7 @@ int main(int argc, char** argv)
 		  /*add read write file*/
 		  puts("user wants to change master password");
 		}
-	      /*
-	      else if(strncmp(buff, "/me", 4) == 0)
-		{
-		  printf("%s", "***");
-		  printf("%s",nick);
-		  printf("%s", " ");
-		  puts(&buff[4]);
-		}
-	      else if(strncmp(buff, "/username", 9) == 0)
-		{
-		  printf("***");
-		  printf(nick);
-		  printf("%s", " has changed user name to ");
-		  counter = 0;
-		  while(counter <= n-6)
-		    {
-		      nick[counter] = buff[counter+6];
-		      counter++;
-		    }
-		  puts(nick);
-		}
-	      */
+
 	      else
 		{
 		  /*if user input unknown command*/
