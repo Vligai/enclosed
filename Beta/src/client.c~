@@ -72,7 +72,7 @@ int main(int argc, char** argv)
   /*authentication process*/
   puts("Would you like to 'create' an account or 'login' using existing account");
   n = read(0, buff, MAX-6);
-  while((strncmp(buff, "create", 6) != 0) && (strncmp(buff,"login",5) != 0))
+  while((strncmp(buff, "create", 6) != 0) || (strncmp(buff,"login",5) != 0))
     {
       puts("Incorrect command, use: create or login");
       n = read(0, buff, MAX-6);

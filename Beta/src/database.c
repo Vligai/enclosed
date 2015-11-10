@@ -1,4 +1,4 @@
-/*
+
 #include <stdio.h> 
 #include <assert.h>
 #include <stdlib.h>
@@ -7,9 +7,9 @@
 
 #define MAX_DATA 512
 #define MAX_ROWS 100
-*/
-#include "enclosed.h"
-/*
+
+//#include "enclosed.h"
+
 struct Users {
         int id;
         int set;
@@ -36,7 +36,7 @@ void die(const char *message)
 
         exit(1);
 }
-*/
+
 void Users_print(struct Users *user)
 {
         printf("%d %s %s\n",
