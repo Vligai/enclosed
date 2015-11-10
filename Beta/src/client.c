@@ -34,6 +34,7 @@ int main(int argc, char** argv)
   int con;
   int nport;	
   char buff[MAX];
+  char buff2[MAX];
   char nick[MAX];
   char password[MAX];
   signal(SIGINT, notime);
@@ -75,6 +76,7 @@ int main(int argc, char** argv)
   n = write(sockfd, buff, MAX-6);
   signal(SIGINT, notime2);
   usleep(3000);
+  /*while user doesn't input create or login display this error message*/
   while((strncmp(buff, "create", 6) != 0) && (strncmp(buff,"login",5) != 0))
     {
       puts("Incorrect command, use: create or login");
@@ -83,6 +85,7 @@ int main(int argc, char** argv)
       signal(SIGINT, notime2);
       usleep(3000);
     }
+  /*if user enters create go here*/
   if(strncmp(buff, "create", 6) == 0)
     {
       puts("enter username: ");
@@ -128,7 +131,8 @@ int main(int argc, char** argv)
       usleep(3000);
       n = read(sockfd, password, MAX-6);
     }
-  if(strncmp(buff, "login", 5) == 0)
+  /*if user enters login go here*/
+  else if(strncmp(buff, "login", 5) == 0)
     {
       puts("enter username: ");
       n = read(0, nick, MAX-6);
@@ -176,7 +180,7 @@ int main(int argc, char** argv)
       /*check commands just simple commands in alpha*/
       if(strncmp(buff, "/exit", 5) == 0)
 	{
-	  fflush((char*)buff);
+	  //fflush((char*)buff);
 	  puts("exiting server");
 	  //free(buff);
 	  //fflush(buff);
@@ -195,8 +199,28 @@ int main(int argc, char** argv)
 	}
       if(strncmp(buff, "/change_mpassword", 16) == 0)
 	{
-	  printf("please input current master password: ");
-	  printf("please input new master password: ");
+	  puts("  ~please input current master password: ");
+	  n = read(0, buff2, MAX-6);
+	  if(n < 0)
+	    puts("Invalid socket");
+	  buff2[n-1] = '\0';
+	  
+	  n = write(sockfd, buff2, MAX-6);
+	  signal(SIGINT, notime2);
+	  usleep(3000);
+	  n = read(sockfd, buff2, MAX-6);
+	  puts("  ~please input new master password: ");
+	  n = read(0, buff2, MAX-6);
+	  if(n < 0)
+	    puts("Invalid socket");
+	  buff2[n-1] = '\0';
+	  
+	  n = write(sockfd, buff2, MAX-6);
+	  signal(SIGINT, notime2);
+	  usleep(3000);
+	  n = read(sockfd, buff2, MAX-6);
+	  
+	  puts("  ~your master password is not changed");
 	}
       
       /*
@@ -215,11 +239,10 @@ int main(int argc, char** argv)
 	  n = read(sockfd, buff, MAX-6);
 	}
     }
-  fflush(buff);
   /*freeing buffer, password and nickname*/
   free(buff);
   free(password);
   free(nick);
-  
+  free(buff2);
 }  
 
