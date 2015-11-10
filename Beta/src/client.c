@@ -72,10 +72,16 @@ int main(int argc, char** argv)
   /*authentication process*/
   puts("Would you like to 'create' an account or 'login' using existing account");
   n = read(0, buff, MAX-6);
+  n = write(sockfd, buff, MAX-6);
+  signal(SIGINT, notime2);
+  usleep(3000);
   while((strncmp(buff, "create", 6) != 0) && (strncmp(buff,"login",5) != 0))
     {
       puts("Incorrect command, use: create or login");
       n = read(0, buff, MAX-6);
+      n = write(sockfd, buff, MAX-6);
+      signal(SIGINT, notime2);
+      usleep(3000);
     }
   if(strncmp(buff, "create", 6) == 0)
     {
@@ -117,6 +123,35 @@ int main(int argc, char** argv)
 	    puts("Invalid socket");
 	  password[n-1] = '\0';
 	}
+      n = write(sockfd, password, MAX-6);
+      signal(SIGINT, notime2);
+      usleep(3000);
+      n = read(sockfd, password, MAX-6);
+    }
+  if(strncmp(buff, "login", 5) == 0)
+    {
+      puts("enter username: ");
+      n = read(0, nick, MAX-6);
+      if(n < 0)
+	puts("Invalid socket");
+      nick[n-1] = '\0';
+     
+      n = write(sockfd, nick, MAX-6);
+      signal(SIGINT, notime2);
+      usleep(3000);
+      n = read(sockfd, nick, MAX-6);
+      if(nick[0] != '~')
+	{
+	  puts("server down\n");
+      exit(0);
+	}
+      /*check for password*/
+      puts("enter password: ");
+      n = read(0, password, MAX-6);
+      if(n < 0)
+	puts("Invalid socket");
+      password[n-1] = '\0';
+     
       n = write(sockfd, password, MAX-6);
       signal(SIGINT, notime2);
       usleep(3000);

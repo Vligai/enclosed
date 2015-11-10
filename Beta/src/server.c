@@ -61,6 +61,7 @@ int main(int argc, char** argv)
   int counter; 
   int pid;
   char buff[MAX];
+  char command[MAX];
   signal(SIGINT, sfault1);
   /*check numer of arguments when starting up server*/
   if(argc < 2)
@@ -111,25 +112,53 @@ int main(int argc, char** argv)
 	}
       if(pid==0)
 	{
+	  close(sockfd);			
+	  n = read(sockfd2, command, MAX-1);
+	  while((strncmp(command, "create", 6) != 0) && (strncmp(command,"login",5) != 0))
+	    {
+	      printf("user has input invalid command: %s/n", command);
+	      
+	      n = read(sockfd2, command, MAX-1);
+	    }
+	  if (strncmp(command, "create", 6) == 0)
+	    {
+	      puts("Creating new user...");
+	      n=read(sockfd2, nick, MAX-1);
+	      nick[n-1]='\0';
+	      printf("Username: ");
+	      puts(nick);
+	      
+	      write (sockfd2, "~", 1);
+	      n=read(sockfd2, password, MAX-1);
+	      password[n-1] = '\0';
+	      //	  unsigned char md5_pass[16];
+	      printf("Password: ");
+	      /*hashing master password to compare it with password inside the db*/
+	      //md5_hash(password, md5_pass);
+	      puts(password);
+	      write(sockfd2, "~", 1);
+	    }
 	  /*nick - username user is going to log in with
 	   check for username in he name of data fiels*/
-	  close(sockfd);			
-	  n=read(sockfd2, nick, MAX-1);
-	  nick[n-1]='\0';
-	  printf("%s",nick);
-	  puts(" has connected to password manager, check for this username in the database");
-	  write (sockfd2, "~", 1);
-	  
-	  /*password - user master password used to log user in*/
-	  n=read(sockfd2, password, MAX-1);
-	  password[n-1] = '\0';
-	  unsigned char md5_pass[16];
-	  printf("%s", "Check if password in the database corresponds to this one: ");
-	  /*hashing master password to compare it with password inside the db*/
-	  md5_hash(password, md5_pass);
-	  puts(md5_pass);
-	  write(sockfd2, "~", 1);
-	  
+	  if (strncmp(command, "login", 5) == 0)
+	    {
+	      close(sockfd);			
+	      n=read(sockfd2, nick, MAX-1);
+	      nick[n-1]='\0';
+	      printf("%s",nick);
+	      puts(" has connected to password manager, check for this username in the database");
+	      write (sockfd2, "~", 1);
+	      
+	      /*password - user master password used to log user in*/
+	      n=read(sockfd2, password, MAX-1);
+	      password[n-1] = '\0';
+	      //	  unsigned char md5_pass[16];
+	      printf("%s", "Check if password in the database corresponds to this one: ");
+	      /*hashing master password to compare it with password inside the db*/
+	      //md5_hash(password, md5_pass);
+	      puts(password);
+	      write(sockfd2, "~", 1);
+	    }
 	  while(1)
 	    {
 	      signal(SIGINT, sfault2);
