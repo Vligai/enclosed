@@ -168,7 +168,7 @@ int main(int argc, char** argv)
   puts("  ~~/help -> to view this message again");
   puts("  ~~/exit -> to quit the program");
   puts("  ~~/view_passes -> to view all saved passwords");
-  puts("  ~~/change_mpassword -> to change master password");
+  puts("  ~~/change_mpass -> to change master password");
   puts("  ~~adding more later on");
   while(1)
     {
@@ -178,28 +178,10 @@ int main(int argc, char** argv)
       if(n <= 0)
 	  puts("Invalid read");
       /*check commands just simple commands in alpha*/
-      if(strncmp(buff, "/exit", 5) == 0)
-	{
-	  //fflush((char*)buff);
-	  puts("exiting server");
-	  //free(buff);
-	  //fflush(buff);
-	  exit(0);
-	}
-      if(strncmp(buff, "/view_passes", 12) == 0)
-	puts("Here are your saved passwords");
-      if(strncmp(buff, "/help", 5) == 0)
-	{
-	  puts("Welcome to Enclosed");
-	  puts("What would you like to do?");
-	  puts("Your options include: ");
-	  puts("help -> to view this message again");
-	  puts("/exit -> to exit manager");
-	  puts("adding more later on");
-	}
-      if(strncmp(buff, "/change_mpassword", 16) == 0)
+      if(strncmp(buff, "/change_mpass", 13) == 0)
 	{
 	  puts("  ~please input current master password: ");
+	  
 	  n = read(0, buff2, MAX-6);
 	  if(n < 0)
 	    puts("Invalid socket");
@@ -222,7 +204,27 @@ int main(int argc, char** argv)
 	  
 	  puts("  ~your master password is not changed");
 	}
-      
+
+      if(strncmp(buff, "/exit", 5) == 0)
+	{
+	  //fflush((char*)buff);
+	  puts("exiting server");
+	  //free(buff);
+	  //fflush(buff);
+	  exit(0);
+	}
+      if(strncmp(buff, "/view_passes", 12) == 0)
+	puts("Here are your saved passwords");
+      if(strncmp(buff, "/help", 5) == 0)
+	{
+	  puts("Welcome to Enclosed");
+	  puts("What would you like to do?");
+	  puts("Your options include: ");
+	  puts("help -> to view this message again");
+	  puts("/exit -> to exit manager");
+	  puts("adding more later on");
+	}
+            
       /*
       if(buff[0] != '~')
 	{

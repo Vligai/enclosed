@@ -37,7 +37,8 @@ void compute_md5(char *str, unsigned char digest[16])
 }
 */
 /*function used to md5 hash password*/
-char *md5_hash(char *str, unsigned char digest[16])
+
+/*char *md5_hash(char *str, unsigned char digest[16])
 {
   int i = 0;
   char result[1024];
@@ -48,6 +49,7 @@ char *md5_hash(char *str, unsigned char digest[16])
     }
   return result;
 }
+*/
 /*main*/
 int main(int argc, char** argv)
 {
@@ -167,22 +169,21 @@ int main(int argc, char** argv)
 	      write (sockfd2, "~", 1);
 	      /*functions available for the user to input
 	       just sample commands*/
-	      if(strncmp(buff, "/change_mpassword", 16) == 0)
+	      if(strncmp(buff, "/change_mpass", 13) == 0)
 		{
-		  puts ("  ~User requested to change master password...");
-
-		  m=read(sockfd2, command, MAX-1);
-		  command[n-1]='\0';
+		  //puts ("  ~User requested to change master password...");
 		  puts("Asking user for existing master password...");
 		  printf("User entered existing master password: ");
-		  puts(command);
+		  n=read(sockfd2, buff, MAX-1);
+		  buff[n-1]='\0';
+		  puts(buff);
 		  write (sockfd2, "~", 1);
 		  
-		  m=read(sockfd2, command, MAX-1);
-		  command[n-1]='\0';
-		  puts("Asking user for desired new master password");
+		  puts("Asking user for desired new master password...");
 		  printf("User entered desired new  master password: ");
-		  puts(command);
+		  n=read(sockfd2, buff, MAX-1);
+		  buff[n-1]='\0';
+		  puts(buff);
 		  write (sockfd2, "~", 1);
 		  
 		  puts("#     User's master password now changed");
