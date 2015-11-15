@@ -167,6 +167,28 @@ int main(int argc, char** argv)
 	      write (sockfd2, "~", 1);
 	      /*functions available for the user to input
 	       just sample commands*/
+	      if(strncmp(buff, "/change_mpassword", 16) == 0)
+		{
+		  puts ("  ~User requested to change master password...");
+
+		  m=read(sockfd2, command, MAX-1);
+		  command[n-1]='\0';
+		  puts("Asking user for existing master password...");
+		  printf("User entered existing master password: ");
+		  puts(command);
+		  write (sockfd2, "~", 1);
+		  
+		  m=read(sockfd2, command, MAX-1);
+		  command[n-1]='\0';
+		  puts("Asking user for desired new master password");
+		  printf("User entered desired new  master password: ");
+		  puts(command);
+		  write (sockfd2, "~", 1);
+		  
+		  puts("#     User's master password now changed");
+
+		}
+	    
 	      if(strncmp(buff, "/exit", 5) == 0)
 		{
 		  printf("%s", "***");
@@ -177,25 +199,6 @@ int main(int argc, char** argv)
 	      if(strncmp(buff, "/help", 5) == 0)
 		{
 		puts("user has viewed a help menu");
-		}
-	      if(strncmp(buff, "/change_mpassword", 16) == 0)
-		{
-		  puts ("  ~User requested to change master password...");
-		  n=read(sockfd2, buff, MAX-1);
-		  buff[n-1]='\0';
-		  puts("Asking user for existing master password...");
-		  printf("User entered existing master password: ");
-		  puts(buff);
-		  write (sockfd2, "~", 1);
-
-		  n=read(sockfd2, buff, MAX-1);
-		  buff[n-1]='\0';
-		  puts("Asking user for desired new master password");
-		  printf("User entered desired new  master password: ");
-		  puts(buff);
-		  write (sockfd2, "~", 1);
-
-		  puts("#     User's master password now changed");
 		}
 	      /*add print whole file of the user db*/
 	      if(strncmp(buff, "/view_passes", 12) == 0)
