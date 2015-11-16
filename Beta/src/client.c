@@ -5,6 +5,7 @@
 */
 #include "enclosed.h"
 #define _CLIENT_H_
+#define SHA256_DIGEST_LENGTH 32
 int sockfd;
 /*called when user disconnects from server*/
 void notime(int sig)
@@ -24,6 +25,7 @@ void notime2(int sig)
       exit(0);
     }
 }
+
 /*main*/
 int main(int argc, char** argv)
 {

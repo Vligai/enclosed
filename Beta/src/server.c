@@ -221,6 +221,9 @@ int main(int argc, char** argv)
   int pid;
   char buff[MAX];
   char buff2[MAX];
+  char website[MAX];
+  char username[MAX];
+  char pass[MAX];
   char command[MAX];
   signal(SIGINT, sfault1);
   //database stuff
@@ -362,9 +365,9 @@ int id = 0;
 		  
 		  puts("          !Asking user for desired new master password...");
 		  printf("     ~User entered desired new  master password: ");
-		  n=read(sockfd2, buff2, MAX-1);
-		  buff2[n-1]='\0';
-		  puts(buff2);
+		  n=read(sockfd2, password, MAX-1);
+		  password[n-1]='\0';
+		  puts(password);
 		  write (sockfd2, "~", 1);
 		  
 		  puts("          !~User's master password now changed~!");
@@ -374,22 +377,22 @@ int id = 0;
 	      if(strncmp(buff, "/add_acc", 8) == 0)
 		{
 		  puts("          !Creating new account...");
-		  n=read(sockfd2, buff2, MAX-1);
-		  buff2[n-1]='\0';
+		  n=read(sockfd2, website, MAX-1);
+		  website[n-1]='\0';
 		  printf("     ~Website: ");
-		  puts(buff2);
+		  puts(website);
 		  write (sockfd2, "~", 1);
 
-		  n=read(sockfd2, buff2, MAX-1);
-		  buff2[n-1]='\0';
+		  n=read(sockfd2, nick, MAX-1);
+		  nick[n-1]='\0';
 		  printf("     ~Username: ");
-		  puts(buff2);
+		  puts(nick);
 		  write (sockfd2, "~", 1);
 
-		  n=read(sockfd2, buff2, MAX-1);
-		  buff2[n-1] = '\0';
+		  n=read(sockfd2, password, MAX-1);
+		  password[n-1] = '\0';
 		  printf("     ~Password: ");		  
-		  puts(buff2);
+		  puts(password);
 		  write(sockfd2, "~", 1);
 		  
 		}

@@ -18,6 +18,10 @@
 #include "openssl/ssl.h"
 #include "openssl/err.h"
 #include <openssl/md5.h>
+#include <openssl/sha.h>
+#include <openssl/evp.h>
+#include <openssl/e_os2.h>
+#include <stddef.h>
 #include <errno.h>
 /*functions in client*/
 #ifndef _CLIENT_H_
@@ -46,17 +50,8 @@ struct Connection {
   struct Database *db;
 };
 
-void die(const char *message)
-{
-  if(errno) {
-    perror(message);
-  } else {
-    printf("ERROR: %s\n", message);
-  }
-
-  exit(1);
-}
 void die(const char *message);
+void sha256(char *string, char outputBuffer[65]);
 void Users_print(struct Users *user);
 void Database_load(struct Connection *conn);
 struct Connection *Database_open(const char *filename, char mode);
