@@ -121,23 +121,23 @@ int main(int argc, char** argv)
 	  n = read(sockfd2, buff, MAX-1);
 	  while((strncmp(buff, "create", 6) != 0) && (strncmp(buff,"login",5) != 0))
 	    {
-	      printf("user has input invalid command: %s\n", buff);
+	      printf(" ### ERROR: user has input invalid command: %s \n", buff);
 	      n = read(sockfd2, buff, MAX-1);
 	    }
 	  /*if user choose to create a new user go here*/
 	  if (strncmp(buff, "create", 6) == 0)
 	    {
-	      puts("Creating new user...");
+	      puts("          !Creating new user...");
 	      n=read(sockfd2, buff, MAX-1);
 	      buff[n-1]='\0';
-	      printf("Username: ");
+	      printf("     ~Username: ");
 	      puts(buff);
 	      
 	      write (sockfd2, "~", 1);
 	      n=read(sockfd2, password, MAX-1);
 	      password[n-1] = '\0';
 	      //	  unsigned char md5_pass[16];
-	      printf("Password: ");
+	      printf("     ~Password: ");
 	      /*hashing master password to compare it with password inside the db*/
 	      //md5_hash(password, md5_pass);
 	      puts(password);
@@ -150,7 +150,7 @@ int main(int argc, char** argv)
 	      //	      close(sockfd);			
 	      n=read(sockfd2, nick, MAX-1);
 	      nick[n-1]='\0';
-	      printf("%s",nick);
+	      printf("## %s",nick);
 	      puts(" has connected to password manager, check for this username in the database");
 	      write (sockfd2, "~", 1);
 	      
@@ -158,7 +158,7 @@ int main(int argc, char** argv)
 	      n=read(sockfd2, password, MAX-1);
 	      password[n-1] = '\0';
 	      //	  unsigned char md5_pass[16];
-	      printf("%s", "Check if password in the database corresponds to this one: ");
+	      printf("## Check if password in the database corresponds to this one: ");
 	      /*hashing master password to compare it with password inside the db*/
 	      //md5_hash(password, md5_pass);
 	      puts(password);
@@ -176,44 +176,44 @@ int main(int argc, char** argv)
 	      if(strncmp(buff, "/change_mpass", 13) == 0)
 		{
 		  //puts ("  ~User requested to change master password...");
-		  printf("Asking user for existing master password... \n");
-		  printf("User entered existing master password: ");
+		  puts("          !Asking user for existing master password...");
+		  printf("     ~User entered existing master password: ");
 
 		  n=read(sockfd2, buff2, MAX-1);
 		  buff2[n-1]='\0';
 		  puts(buff2);
 		  write (sockfd2, "~", 1);
 		  
-		  puts("Asking user for desired new master password...");
-		  printf("User entered desired new  master password: ");
+		  puts("          !Asking user for desired new master password...");
+		  printf("     ~User entered desired new  master password: ");
 		  n=read(sockfd2, buff2, MAX-1);
 		  buff2[n-1]='\0';
 		  puts(buff2);
 		  write (sockfd2, "~", 1);
 		  
-		  puts("#     User's master password now changed");
+		  puts("          !~User's master password now changed~!");
 
 		}
 
 	      if(strncmp(buff, "/add_acc", 8) == 0)
 		{
-		  puts("Creating new account...");
-		  n=read(sockfd2, buff, MAX-1);
-		  buff[n-1]='\0';
-		  printf("Website: ");
-		  puts(buff);
+		  puts("          !Creating new account...");
+		  n=read(sockfd2, buff2, MAX-1);
+		  buff2[n-1]='\0';
+		  printf("     ~Website: ");
+		  puts(buff2);
 		  write (sockfd2, "~", 1);
 
-		  n=read(sockfd2, buff, MAX-1);
-		  buff[n-1]='\0';
-		  printf("Username: ");
-		  puts(buff);
+		  n=read(sockfd2, buff2, MAX-1);
+		  buff2[n-1]='\0';
+		  printf("     ~Username: ");
+		  puts(buff2);
 		  write (sockfd2, "~", 1);
 
-		  n=read(sockfd2, buff, MAX-1);
-		  buff[n-1] = '\0';
-		  printf("Password: ");		  
-		  puts(buff);
+		  n=read(sockfd2, buff2, MAX-1);
+		  buff2[n-1] = '\0';
+		  printf("     ~Password: ");		  
+		  puts(buff2);
 		  write(sockfd2, "~", 1);
 		  
 		}
@@ -227,20 +227,26 @@ int main(int argc, char** argv)
 		}
 	      if(strncmp(buff, "/help", 5) == 0)
 		{
-		puts("user has viewed a help menu");
+		puts("          !user has viewed a help menu");
 		}
 	      /*add print whole file of the user db*/
 	      if(strncmp(buff, "/view_passes", 12) == 0)
 		puts("Here are your saved passwords");
 
-	      else
+	      else if(((strncmp(buff, "/help", 5) != 0) && (strncmp(buff, "/exit", 5) != 0) && (strncmp(buff, "/add_acc", 8) != 0) && (strncmp(buff, "/view_passes", 12) != 0) && (strncmp(buff, "/change_mpass", 13) != 0)))
 		{
 		  /*if user input unknown command*/
-		  puts("user has input unknown command");
+		  printf(" ### ERROR: user has input unknown command: %s \n", buff);
+		  
 		}
 	    }	  
 	}
       else
 	close(sockfd2);
     }
+  free(buff);
+  free(buff2);
+  free(nick);
+  free(password);
+  free(command);
 }
