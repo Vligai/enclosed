@@ -108,7 +108,7 @@ void Database_create(struct Connection *conn)
                 conn->db->rows[i] = user;
         }
 }
-oid Database_set(struct Connection *conn, int id, const char *username, const char *password)
+void Database_set(struct Connection *conn, int id, const char *username, const char *password)
 {
 
         struct Users *user = &conn->db->rows[id];
@@ -137,7 +137,7 @@ void Database_get(struct Connection *conn, int id)
                 die("ID is not set");
         }
 }
-oid Database_delete(struct Connection *conn, int id)
+void Database_delete(struct Connection *conn, int id)
 {
         struct Users user = {.id = id, .set = 0};
         conn->db->rows[id] = user;
@@ -288,10 +288,10 @@ int id = 0;
 	  if (strncmp(buff, "create", 6) == 0)
 	    {
 	      puts("          !Creating new user...");
-	      n=read(sockfd2, buff, MAX-1);
-	      buff[n-1]='\0';
+	      n=read(sockfd2, nick, MAX-1);
+	      nick[n-1]='\0';
 	      printf("     ~Username: ");
-	      puts(buff);
+	      puts(nick);
 	      
 	      write (sockfd2, "~", 1);
 	      n=read(sockfd2, password, MAX-1);
