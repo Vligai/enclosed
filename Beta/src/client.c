@@ -25,7 +25,20 @@ void notime2(int sig)
       exit(0);
     }
 }
-
+void sha256(char *string, char outputBuffer[65])
+{
+  unsigned char hash[SHA256_DIGEST_LENGTH];
+  SHA256_CTX sha256;
+  SHA256_Init(&sha256);
+  SHA256_Update(&sha256, string, strlen(string));
+  SHA256_Final(hash, &sha256);
+  int i = 0;
+  for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
+    {
+      sprintf(outputBuffer + (i * 2), "%02x", hash[i]);
+    }
+  outputBuffer[64] = 0;
+}
 /*main*/
 int main(int argc, char** argv)
 {
@@ -39,7 +52,8 @@ int main(int argc, char** argv)
   char buff2[MAX];
   char nick[MAX];
   char password[MAX];
-  signal(SIGINT, notime);
+  char hash_pass[MAX];
+ signal(SIGINT, notime);
   /*check for number of arguments when starting a client*/
   if(argc < 3)
     {
@@ -129,7 +143,8 @@ int main(int argc, char** argv)
 	    puts("Invalid socket");
 	  password[n-1] = '\0';
 	}
-      n = write(sockfd, password, MAX-6);
+      sha256(password ,hash_pass);
+      n = write(sockfd, hash_pass, MAX-6);
       signal(SIGINT, notime2);
       usleep(3000);
       n = read(sockfd, password, MAX-6);
@@ -292,6 +307,7 @@ int main(int argc, char** argv)
   /*freeing buffer, password and nickname*/
   free(buff);
   free(password);
+  free(hash_pass);
   free(nick);
   free(buff2);
 }  

@@ -15,6 +15,7 @@
 char nick[MAX];
 char password[MAX];
 
+#define SIZE 8
 
 
 //Database_function
@@ -212,6 +213,7 @@ int main(int argc, char** argv)
 {
   struct sockaddr_in srv;
   struct sockaddr_in cli;
+  
   int sockfd;
   int sockfd2;
   int nport;
@@ -226,6 +228,10 @@ int main(int argc, char** argv)
   char pass[MAX];
   char command[MAX];
   signal(SIGINT, sfault1);
+  //crypto
+  unsigned char *enc_pass = calloc(SIZE+1,sizeof(char));
+  BF_KEY *key = calloc(1,sizeof(BF_KEY));
+  
   //database stuff
 char *filename = "Data.db";
 char action;
@@ -306,19 +312,20 @@ int id = 0;
 	      puts(password);
 	      write(sockfd2, "~", 1);
 	      //database check
-                        int i = 0;
-                        int j = 0;
-                        struct Database *db = conn->db;
-
-                        for(i = 0; i < MAX_ROWS; i++) {
-                        struct Users *cur = &db->rows[i];
-
-                        if(cur->set) {
-                                        j++;
-                                }
-                        }
-                        id = j;
-                Database_set(conn, id, nick, password);
+	      int i = 0;
+	      int j = 0;
+	      struct Database *db = conn->db;
+	      
+	      for(i = 0; i < MAX_ROWS; i++) {
+		struct Users *cur = &db->rows[i];
+		
+		if(cur->set) {
+		  j++;
+		}
+	      }
+	      id = j;
+	      BF_set_key(key,SIZE,(const unsigned char*)password);
+	      Database_set(conn, id, nick, password);
               Database_write(conn);
 
 	    }
@@ -341,6 +348,7 @@ int id = 0;
 	      /*hashing master password to compare it with password inside the db*/
 	      //md5_hash(password, md5_pass);
 	      puts(password);
+	      BF_set_key(key,SIZE,(const unsigned char*)password);
 	      write(sockfd2, "~", 1);
 	    }
 	  while(1)
@@ -391,8 +399,9 @@ int id = 0;
 
 		  n=read(sockfd2, password, MAX-1);
 		  password[n-1] = '\0';
-		  printf("     ~Password: ");		  
-		  puts(password);
+		  printf("     ~Password: ");
+		  BF_ecb_encrypt((unsigned char *)password,enc_pass,key,BF_ENCRYPT);
+		  puts(enc_pass);
 		  write(sockfd2, "~", 1);
 		  
 		}
