@@ -15,9 +15,7 @@
 char nick[MAX];
 char password[MAX];
 
-<<<<<<< HEAD
 #define SIZE 8
-=======
 //Passworddatabase
 /*
 struct Passwords {
@@ -164,7 +162,6 @@ void Database_listp(struct Connectionp *conn)
         }
 }
 */
->>>>>>> 3549946e709564decb61e4e005d5183340b3fd3f
 
 
 //Database_function
