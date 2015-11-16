@@ -172,12 +172,15 @@ int main(int argc, char** argv)
   puts("  ~~adding more later on");
   while(1)
     {
+      bzero(buff,MAX);
       n = read(0, buff, MAX-6);
       buff[n-1] = '\0';
       
       if(n <= 0)
 	  puts("Invalid read");
-      /*check commands just simple commands in alpha*/
+      
+/*check commands just simple commands in alpha*/
+      write(sockfd,buff,MAX-6);
       if(strncmp(buff, "/change_mpass", 13) == 0)
 	{
 	  puts("  ~please input current master password: ");
@@ -185,11 +188,11 @@ int main(int argc, char** argv)
 	  n = read(0, buff2, MAX-6);
 	  if(n < 0)
 	    puts("Invalid socket");
-	  buff2[n-1] = '\0';
+	  buff2[n] = '\0';
 	  
 	  n = write(sockfd, buff2, MAX-6);
 	  signal(SIGINT, notime2);
-	  usleep(3000);
+	  usleep(300);
 	  n = read(sockfd, buff2, MAX-6);
 	  puts("  ~please input new master password: ");
 	  n = read(0, buff2, MAX-6);
