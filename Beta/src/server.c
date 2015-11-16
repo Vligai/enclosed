@@ -113,11 +113,11 @@ void Database_setp(struct Connectionp *conn, int id, const char *account, const 
 
         struct Passwords *pass = &conn->db->rows[id];
 
-      /*if(user->set) 
-        {
-                id++;
-        }
-*/
+      //if(user->set) 
+        //{
+          //      id++;
+        //}
+      
         pass->set = 1;
         //we have to find a better way to do this rather than strncpy
         char *res = strncpy(pass->account, account, MAX_DATA);
