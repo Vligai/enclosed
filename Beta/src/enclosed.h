@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include "openssl/ssl.h"
 #include "openssl/err.h"
-#include <openssl/md5.h>
+#include <openssl/blowfish.h>
 #include <errno.h>
 /*functions in client*/
 #ifndef _CLIENT_H_
