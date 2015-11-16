@@ -172,7 +172,6 @@ int main(int argc, char** argv)
   puts("  ~~adding more later on");
   while(1)
     {
-      bzero(buff,MAX);
       n = read(0, buff, MAX-6);
       buff[n-1] = '\0';
       
@@ -274,10 +273,12 @@ int main(int argc, char** argv)
       /*if user inputs non of the above commands*/
       else
 	{
-	  n = write(sockfd, buff, MAX-6);
+	  
+	   bzero(buff,MAX);
+	  //n = write(sockfd, buff, MAX-6);
 	  puts("unknown command, type: help to view available actions");
-	  usleep(3000);
-	  n = read(sockfd, buff, MAX-6);
+	  //usleep(3000);
+	  //n = read(sockfd, buff, MAX-6);
 	}
     }
   /*freeing buffer, password and nickname*/
