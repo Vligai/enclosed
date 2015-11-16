@@ -15,6 +15,152 @@
 char nick[MAX];
 char password[MAX];
 
+//Passworddatabase
+/*
+struct Passwords {
+        int id;
+        int set;
+        char account[MAX_DATA];
+        char username[MAX_DATA];
+        char password[MAX_DATA];
+};
+
+struct Databasep {
+        struct Passwords rows[MAX_ROWS];
+};
+struct Connectionp {
+        FILE *filep;
+        struct Databasep *db;
+};
+void Passwords_print(struct Passwords *pass)
+{
+        printf("%d %s %s %s\n",
+                pass->id, pass->account,pass->username, pass->password);
+}
+void die(const char *message)
+{
+        if(errno) {
+                perror(message);
+        } else {
+                printf("ERROR: %s\n", message);
+        }
+
+        exit(1);
+}
+
+void Database_loadp(struct Connectionp *conn)
+{
+        int rc = fread(conn->db, sizeof(struct Databasep), 1, conn->filep);
+        if(rc != 1) die("Failed to load database.");
+}
+
+struct Connectionp *Database_openp(const char *filenamep, char mode)
+{
+        struct Connectionp *conn = malloc(sizeof(struct Connectionp));
+        if(!conn) die("Memory error");
+
+        conn->db = malloc(sizeof(struct Databasep));
+        if(!conn->db) die("Memory error");
+
+        if(mode == 'c') {
+                conn->filep = fopen(filenamep, "w");
+        }else {
+                conn->filep = fopen(filenamep, "r+");
+
+                if(conn->filep) {
+                        Database_loadp(conn);
+                }
+        }
+
+        if(!conn-> filep) die("Failed to open the file");
+
+        return conn;
+}
+
+void Database_closep(struct Connectionp *conn)
+{
+        if(conn) {
+                if(conn->filep) fclose(conn->filep);
+                if(conn->db) free(conn->db);
+                free(conn);
+        }
+}
+
+void Database_writep(struct Connectionp *conn)
+{
+        rewind(conn->filep);
+
+        int rc = fwrite(conn->db, sizeof(struct Databasep), 1, conn->filep);
+        if(rc != 1) die("failed to write database.");
+
+        rc = fflush(conn->filep);
+        if(rc == -1) die("Cannot flush database.");
+}
+
+void Database_createp(struct Connectionp *conn)
+{
+        int i = 0;
+
+        for(i = 0; i < MAX_ROWS; i++) {
+                //Initizalize Database
+                struct Passwords pass = {.id = i, .set = 0};
+                // Assign database
+                conn->db->rows[i] = pass;
+        }
+}
+void Database_setp(struct Connectionp *conn, int id, const char *account, const char *username, const char *password)
+{
+
+        struct Passwords *pass = &conn->db->rows[id];
+
+      /*if(user->set) 
+        {
+                id++;
+        }
+*/
+        pass->set = 1;
+        //we have to find a better way to do this rather than strncpy
+        char *res = strncpy(pass->account, account, MAX_DATA);
+        if(!res) die("Account copy failed");
+
+        res = strncpy(pass->username, username, MAX_DATA);
+        if(!res) die("Username copy failed");
+
+        res = strncpy(pass->password, password, MAX_DATA);
+        if(!res) die("Password copy failed");
+}
+void Database_getp(struct Connectionp *conn, int id)
+{
+        struct Passwords *pass = &conn->db->rows[id];
+
+        if(pass->set) {
+                Passwords_print(pass);
+        } else {
+                die("ID is not set");
+        }
+}
+
+
+void Database_deletep(struct Connectionp *conn, int id)
+{
+        struct Passwords pass = {.id = id, .set = 0};
+        conn->db->rows[id] = pass;
+}
+
+void Database_listp(struct Connectionp *conn)
+{
+        int i = 0;
+        struct Databasep *db = conn->db;
+
+        for(i = 0; i < MAX_ROWS; i++) {
+                struct Passwords *cur = &db->rows[i];
+
+                if(cur->set) {
+                        Passwords_print(cur);
+                }
+        }
+}
+*/
 
 
 //Database_function
