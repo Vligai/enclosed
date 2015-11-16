@@ -17,7 +17,7 @@ char password[MAX];
 
 #define SIZE 8
 //Passworddatabase
-/*
+
 struct Passwords {
         int id;
         int set;
@@ -161,7 +161,6 @@ void Database_listp(struct Connectionp *conn)
                 }
         }
 }
-*/
 
 
 //Database_function
@@ -380,8 +379,10 @@ int main(int argc, char** argv)
   
   //database stuff
 char *filename = "Data.db";
+char *filenamep = "pass.db";
 char action;
 struct Connection *conn = Database_open(filename, action);
+struct Connectionp *conn = Database_openp(filenamep, action);
 int id = 0;
   /*check numer of arguments when starting up server*/
   if(argc < 2)
@@ -549,6 +550,8 @@ int id = 0;
 		  BF_ecb_encrypt((unsigned char *)password,enc_pass,key,BF_ENCRYPT);
 		  puts(enc_pass);
 		  write(sockfd2, "~", 1);
+		  Database_setp(conn, id, nick, password);
+		  Database_writep(conn);
 		  
 		}
 
@@ -578,6 +581,8 @@ int id = 0;
       else
 	close(sockfd2);
     }
+    Database_closep(conn);
+    Database_close(conn);
   free(buff);
   free(buff2);
   free(nick);
