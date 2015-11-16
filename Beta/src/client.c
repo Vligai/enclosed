@@ -205,6 +205,42 @@ int main(int argc, char** argv)
 	  puts("  ~your master password is not changed");
 	}
 
+      if(strncmp(buff, "/add_acc", 8) == 0)
+	{
+	  puts("  ~please input website for this account: ");
+	  
+	  n = read(0, buff2, MAX-6);
+	  if(n < 0)
+	    puts("Invalid socket");
+	  buff2[n-1] = '\0';
+	  
+	  n = write(sockfd, buff2, MAX-6);
+	  signal(SIGINT, notime2);
+	  usleep(3000);
+	  n = read(sockfd, buff2, MAX-6);
+	  puts("  ~please input your username for that account: ");
+	  n = read(0, buff2, MAX-6);
+	  if(n < 0)
+	    puts("Invalid socket");
+	  buff2[n-1] = '\0';
+	  
+	  n = write(sockfd, buff2, MAX-6);
+	  signal(SIGINT, notime2);
+	  usleep(3000);
+	  n = read(sockfd, buff2, MAX-6);
+	  
+	  puts("  ~please input your password for that account: ");
+	  n = read(0, buff2, MAX-6);
+	  if(n < 0)
+	    puts("Invalid socket");
+	  buff2[n-1] = '\0';
+	  
+	  n = write(sockfd, buff2, MAX-6);
+	  signal(SIGINT, notime2);
+	  usleep(3000);
+	  n = read(sockfd, buff2, MAX-6);
+	}
+
       if(strncmp(buff, "/exit", 5) == 0)
 	{
 	  //fflush((char*)buff);
@@ -247,4 +283,3 @@ int main(int argc, char** argv)
   free(nick);
   free(buff2);
 }  
-

@@ -2,10 +2,12 @@
   server side of the enclosed-password manager
   uses regular sockets during alpha, will use SSL in Beta version
 */
+
 #define _SERVER_H_
 #include "enclosed.h"
 char nick[MAX];
 char password[MAX];
+
 void sfault1(int sig)
 {
   if(sig == SIGINT)
@@ -63,6 +65,7 @@ int main(int argc, char** argv)
   int counter; 
   int pid;
   char buff[MAX];
+  char buff2[MAX];
   char command[MAX];
   signal(SIGINT, sfault1);
   /*check numer of arguments when starting up server*/
@@ -115,20 +118,20 @@ int main(int argc, char** argv)
       if(pid==0)
 	{
 	  close(sockfd);			
-	  n = read(sockfd2, command, MAX-1);
-	  while((strncmp(command, "create", 6) != 0) && (strncmp(command,"login",5) != 0))
+	  n = read(sockfd2, buff, MAX-1);
+	  while((strncmp(buff, "create", 6) != 0) && (strncmp(buff,"login",5) != 0))
 	    {
-	      printf("user has input invalid command: %s/n", command);
-	      n = read(sockfd2, command, MAX-1);
+	      printf("user has input invalid command: %s\n", buff);
+	      n = read(sockfd2, buff, MAX-1);
 	    }
 	  /*if user choose to create a new user go here*/
-	  if (strncmp(command, "create", 6) == 0)
+	  if (strncmp(buff, "create", 6) == 0)
 	    {
 	      puts("Creating new user...");
-	      n=read(sockfd2, nick, MAX-1);
-	      nick[n-1]='\0';
+	      n=read(sockfd2, buff, MAX-1);
+	      buff[n-1]='\0';
 	      printf("Username: ");
-	      puts(nick);
+	      puts(buff);
 	      
 	      write (sockfd2, "~", 1);
 	      n=read(sockfd2, password, MAX-1);
@@ -142,9 +145,9 @@ int main(int argc, char** argv)
 	    }
 	  /*nick - username user is going to log in with
 	   check for username in he name of data fiels*/
-	  else if (strncmp(command, "login", 5) == 0)
+	  else if (strncmp(buff, "login", 5) == 0)
 	    {
-	      close(sockfd);			
+	      //	      close(sockfd);			
 	      n=read(sockfd2, nick, MAX-1);
 	      nick[n-1]='\0';
 	      printf("%s",nick);
@@ -163,6 +166,7 @@ int main(int argc, char** argv)
 	    }
 	  while(1)
 	    {
+	      close(sockfd);
 	      signal(SIGINT, sfault2);
 	      n=read(sockfd2, buff, MAX-1);
 	      buff[n]='\0';
@@ -172,24 +176,48 @@ int main(int argc, char** argv)
 	      if(strncmp(buff, "/change_mpass", 13) == 0)
 		{
 		  //puts ("  ~User requested to change master password...");
-		  puts("Asking user for existing master password...");
+		  printf("Asking user for existing master password... \n");
 		  printf("User entered existing master password: ");
-		  n=read(sockfd2, buff, MAX-1);
-		  buff[n-1]='\0';
-		  puts(buff);
+
+		  n=read(sockfd2, buff2, MAX-1);
+		  buff2[n-1]='\0';
+		  puts(buff2);
 		  write (sockfd2, "~", 1);
 		  
 		  puts("Asking user for desired new master password...");
 		  printf("User entered desired new  master password: ");
-		  n=read(sockfd2, buff, MAX-1);
-		  buff[n-1]='\0';
-		  puts(buff);
+		  n=read(sockfd2, buff2, MAX-1);
+		  buff2[n-1]='\0';
+		  puts(buff2);
 		  write (sockfd2, "~", 1);
 		  
 		  puts("#     User's master password now changed");
 
 		}
-	    
+
+	      if(strncmp(buff, "/add_acc", 8) == 0)
+		{
+		  puts("Creating new account...");
+		  n=read(sockfd2, buff, MAX-1);
+		  buff[n-1]='\0';
+		  printf("Website: ");
+		  puts(buff);
+		  write (sockfd2, "~", 1);
+
+		  n=read(sockfd2, buff, MAX-1);
+		  buff[n-1]='\0';
+		  printf("Username: ");
+		  puts(buff);
+		  write (sockfd2, "~", 1);
+
+		  n=read(sockfd2, buff, MAX-1);
+		  buff[n-1] = '\0';
+		  printf("Password: ");		  
+		  puts(buff);
+		  write(sockfd2, "~", 1);
+		  
+		}
+
 	      if(strncmp(buff, "/exit", 5) == 0)
 		{
 		  printf("%s", "***");
