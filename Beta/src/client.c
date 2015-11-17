@@ -6,6 +6,8 @@
 #include "enclosed.h"
 #define _CLIENT_H_
 #define SHA256_DIGEST_LENGTH 32
+#include <termios.h>
+#include <unistd.h>
 int sockfd;
 /*called when user disconnects from server*/
 void notime(int sig)
@@ -24,6 +26,17 @@ void notime2(int sig)
       puts("\n closing");
       exit(0);
     }
+}
+int getch() {
+  struct termios oldt, newt;
+  int ch;
+  tcgetattr(STDIN_FILENO, &oldt);
+  newt = oldt;
+  newt.c_lflag &= ~(ICANON | ECHO);
+  tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+  ch = getchar();
+  tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+  return ch;
 }
 void sha256(char *string, char outputBuffer[65])
 {
@@ -46,6 +59,7 @@ int main(int argc, char** argv)
   struct hostent* bserv;
   int n;
   int m;
+  char c;
   int con;
   int nport;	
   char buff[MAX];
@@ -130,10 +144,23 @@ int main(int argc, char** argv)
 	}
       /*check for password*/
       puts(" ~ enter password: ");
-      n = read(0, password, MAX-6);
+
+      
+      //      n = read(0, password, MAX-6);
       if(n < 0)
 	puts("Invalid socket");
+      int i;
+      for (;;) {
+        c = getch();
+	password[i] = c;
+	i++;
+        if(c == '\n')
+	  break;
+      }
+     
       password[n-1] = '\0';
+      
+      puts(password);
       while(n<5)
 	{
 	  puts(" ### ERROR: Invalid password, must be atleast 5 charachters long");
@@ -143,6 +170,7 @@ int main(int argc, char** argv)
 	    puts("Invalid socket");
 	  password[n-1] = '\0';
 	}
+      
       sha256(password ,hash_pass);
       n = write(sockfd, hash_pass, MAX-6);
       signal(SIGINT, notime2);
@@ -173,7 +201,12 @@ int main(int argc, char** argv)
       if(n < 0)
 	puts("Invalid socket");
       password[n-1] = '\0';
-     
+      while (password != "test123")
+	{
+	  puts(" ### ERROR: user name and password does not match");
+	  puts(" ~ enter password: ");
+	  n = read(0, password, MAX-6);
+	}
       n = write(sockfd, password, MAX-6);
       signal(SIGINT, notime2);
       usleep(3000);

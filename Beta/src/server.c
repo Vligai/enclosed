@@ -49,56 +49,56 @@ void die(const char *message)
         exit(1);
 }
 
-void Database_loadp(struct Connectionp *conn)
+void Database_loadp(struct Connectionp *connp)
 {
-        int rc = fread(conn->db, sizeof(struct Databasep), 1, conn->filep);
+        int rc = fread(connp->db, sizeof(struct Databasep), 1, connp->filep);
         if(rc != 1) die("Failed to load database.");
 }
 
 struct Connectionp *Database_openp(const char *filenamep, char mode)
 {
-        struct Connectionp *conn = malloc(sizeof(struct Connectionp));
-        if(!conn) die("Memory error");
+        struct Connectionp *connp = malloc(sizeof(struct Connectionp));
+        if(!connp) die("Memory error");
 
-        conn->db = malloc(sizeof(struct Databasep));
-        if(!conn->db) die("Memory error");
+        connp->db = malloc(sizeof(struct Databasep));
+        if(!connp->db) die("Memory error");
 
         if(mode == 'c') {
-                conn->filep = fopen(filenamep, "w");
+                connp->filep = fopen(filenamep, "w");
         }else {
-                conn->filep = fopen(filenamep, "r+");
+                connp->filep = fopen(filenamep, "r+");
 
-                if(conn->filep) {
-                        Database_loadp(conn);
+                if(connp->filep) {
+                        Database_loadp(connp);
                 }
         }
 
-        if(!conn-> filep) die("Failed to open the file");
+        if(!connp-> filep) die("Failed to open the file");
 
-        return conn;
+        return connp;
 }
 
-void Database_closep(struct Connectionp *conn)
+void Database_closep(struct Connectionp *connp)
 {
-        if(conn) {
-                if(conn->filep) fclose(conn->filep);
-                if(conn->db) free(conn->db);
-                free(conn);
+        if(connp) {
+                if(connp->filep) fclose(connp->filep);
+                if(connp->db) free(connp->db);
+                free(connp);
         }
 }
 
-void Database_writep(struct Connectionp *conn)
+void Database_writep(struct Connectionp *connp)
 {
-        rewind(conn->filep);
+        rewind(connp->filep);
 
-        int rc = fwrite(conn->db, sizeof(struct Databasep), 1, conn->filep);
+        int rc = fwrite(connp->db, sizeof(struct Databasep), 1, connp->filep);
         if(rc != 1) die("failed to write database.");
 
-        rc = fflush(conn->filep);
+        rc = fflush(connp->filep);
         if(rc == -1) die("Cannot flush database.");
 }
 
-void Database_createp(struct Connectionp *conn)
+void Database_createp(struct Connectionp *connp)
 {
         int i = 0;
 
@@ -106,13 +106,13 @@ void Database_createp(struct Connectionp *conn)
                 //Initizalize Database
                 struct Passwords pass = {.id = i, .set = 0};
                 // Assign database
-                conn->db->rows[i] = pass;
+                connp->db->rows[i] = pass;
         }
 }
-void Database_setp(struct Connectionp *conn, int id, const char *account, const char *username, const char *password)
+void Database_setp(struct Connectionp *connp, int id, const char *account, const char *username, const char *password)
 {
 
-        struct Passwords *pass = &conn->db->rows[id];
+        struct Passwords *pass = &connp->db->rows[id];
 
       //if(user->set) 
         //{
@@ -130,9 +130,9 @@ void Database_setp(struct Connectionp *conn, int id, const char *account, const 
         res = strncpy(pass->password, password, MAX_DATA);
         if(!res) die("Password copy failed");
 }
-void Database_getp(struct Connectionp *conn, int id)
+void Database_getp(struct Connectionp *connp, int id)
 {
-        struct Passwords *pass = &conn->db->rows[id];
+        struct Passwords *pass = &connp->db->rows[id];
 
         if(pass->set) {
                 Passwords_print(pass);
@@ -142,16 +142,16 @@ void Database_getp(struct Connectionp *conn, int id)
 }
 
 
-void Database_deletep(struct Connectionp *conn, int id)
+void Database_deletep(struct Connectionp *connp, int id)
 {
         struct Passwords pass = {.id = id, .set = 0};
-        conn->db->rows[id] = pass;
+        connp->db->rows[id] = pass;
 }
 
-void Database_listp(struct Connectionp *conn)
+void Database_listp(struct Connectionp *connp)
 {
         int i = 0;
-        struct Databasep *db = conn->db;
+        struct Databasep *db = connp->db;
 
         for(i = 0; i < MAX_ROWS; i++) {
                 struct Passwords *cur = &db->rows[i];
@@ -180,17 +180,6 @@ struct Connection {
         struct Database *db;
 };
 
-void die(const char *message)
-{
-        if(errno) {
-                perror(message);
-        } else {
-                printf("ERROR: %s\n", message);
-        }
-
-        exit(1);
-}
- 
 void Users_print(struct Users *user)
 {
         printf("%d %s %s\n",
@@ -382,7 +371,7 @@ char *filename = "Data.db";
 char *filenamep = "pass.db";
 char action;
 struct Connection *conn = Database_open(filename, action);
-struct Connectionp *conn = Database_openp(filenamep, action);
+struct Connectionp *connp  = Database_openp(filenamep, action);
 int id = 0;
   /*check numer of arguments when starting up server*/
   if(argc < 2)
@@ -550,8 +539,8 @@ int id = 0;
 		  BF_ecb_encrypt((unsigned char *)password,enc_pass,key,BF_ENCRYPT);
 		  puts(enc_pass);
 		  write(sockfd2, "~", 1);
-		  Database_setp(conn, id, nick, password);
-		  Database_writep(conn);
+		  Database_setp(connp, id, website, nick, password);
+		  Database_writep(connp);
 		  
 		}
 
@@ -581,7 +570,7 @@ int id = 0;
       else
 	close(sockfd2);
     }
-    Database_closep(conn);
+    Database_closep(connp);
     Database_close(conn);
   free(buff);
   free(buff2);

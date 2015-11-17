@@ -10,6 +10,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <termios.h>
+#include <unistd.h>
 #include <netdb.h>
 #include <string.h>
 #include <stdio.h>
@@ -49,7 +51,7 @@ struct Connection {
   FILE *file;
   struct Database *db;
 };
-
+int getch();
 void die(const char *message);
 void sha256(char *string, char outputBuffer[65]);
 void Users_print(struct Users *user);
