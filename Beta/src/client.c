@@ -67,7 +67,7 @@ int main(int argc, char** argv)
   char nick[MAX];
   char password[MAX];
   char hash_pass[MAX];
- signal(SIGINT, notime);
+  signal(SIGINT, notime);
   /*check for number of arguments when starting a client*/
   if(argc < 3)
     {
@@ -146,29 +146,40 @@ int main(int argc, char** argv)
       puts(" ~ enter password: ");
 
       
-      //      n = read(0, password, MAX-6);
+      //n = read(0, password, MAX-6);
       if(n < 0)
 	puts("Invalid socket");
-      int i;
+      
+      int i = 0;
       for (;;) {
         c = getch();
 	password[i] = c;
 	i++;
         if(c == '\n')
-	  break;
+	  {
+	    //i=0;
+	    break;
+	  }
       }
-     
-      password[n-1] = '\0';
       
-      puts(password);
-      while(n<5)
+      //password[n-1] = '\0';
+      
+      //      puts(password);
+      while(i<5)
 	{
 	  puts(" ### ERROR: Invalid password, must be atleast 5 charachters long");
 	  puts(" ~ enter password: ");
-	  n = read(0, password, MAX-6);
-	  if(n < 0)
-	    puts("Invalid socket");
-	  password[n-1] = '\0';
+	  i = 0;
+	  for (;;) {
+	    c = getch();
+	    password[i] = c;
+	    i++;
+	    if(c == '\n')
+	      {
+		//i=0;
+		break;
+	  }
+      }
 	}
       
       sha256(password ,hash_pass);
@@ -197,17 +208,31 @@ int main(int argc, char** argv)
 	}
       /*check for password*/
       puts(" ~ enter password: ");
-      n = read(0, password, MAX-6);
+      int i = 0;
+      for (;;) {
+        c = getch();
+	password[i] = c;
+	i++;
+        if(c == '\n')
+	  {
+	    //i=0;
+	    break;
+	  }
+      }
       if(n < 0)
 	puts("Invalid socket");
-      password[n-1] = '\0';
+      /*
       while (password != "test123")
 	{
 	  puts(" ### ERROR: user name and password does not match");
 	  puts(" ~ enter password: ");
+	  //	  puts(password);
 	  n = read(0, password, MAX-6);
+	  password[n-1] = '\0';
 	}
-      n = write(sockfd, password, MAX-6);
+      */
+      sha256(password ,hash_pass);
+      n = write(sockfd, hash_pass, MAX-6);
       signal(SIGINT, notime2);
       usleep(3000);
       n = read(sockfd, password, MAX-6);
@@ -244,7 +269,7 @@ int main(int argc, char** argv)
 	  n = write(sockfd, buff2, MAX-6);
 	  signal(SIGINT, notime2);
 	  usleep(300);
-	  n = read(sockfd, buff2, MAX-6);
+	  //n = read(sockfd, buff2, MAX-6);
 	  puts(" ~ please input new master password: ");
 	  n = read(0, buff2, MAX-6);
 	  if(n < 0)
@@ -254,7 +279,7 @@ int main(int argc, char** argv)
 	  n = write(sockfd, buff2, MAX-6);
 	  signal(SIGINT, notime2);
 	  usleep(3000);
-	  n = read(sockfd, buff2, MAX-6);
+	  //n = read(sockfd, buff2, MAX-6);
 	 	   bzero(buff2,MAX);
 	  //puts("          ! your master password is now changed");
 	}
