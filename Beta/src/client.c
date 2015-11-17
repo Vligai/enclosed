@@ -187,6 +187,9 @@ int main(int argc, char** argv)
       signal(SIGINT, notime2);
       usleep(3000);
       n = read(sockfd, password, MAX-6);
+      puts("          ! Creating new account...");
+      usleep(1000000);
+      puts(" ~ Account has been successfuly created");
     }
   /*if user enters login go here*/
   else if(strncmp(buff, "login", 5) == 0)
@@ -236,6 +239,9 @@ int main(int argc, char** argv)
       signal(SIGINT, notime2);
       usleep(3000);
       n = read(sockfd, password, MAX-6);
+      puts("          ! Logging in");
+      usleep(1000000);
+      
     }
   /*introductory message*/
   printf("                    You are now logged in as %s \n", nick);
@@ -259,6 +265,8 @@ int main(int argc, char** argv)
       write(sockfd,buff,MAX-6);
       if(strncmp(buff, "/change_mpass", 13) == 0)
 	{
+	  puts("          ! Accessing user database to change master password...");
+	  usleep(1000000);
 	  puts(" ~ please input current master password: ");
 	  
 	  n = read(0, buff2, MAX-6);
@@ -279,6 +287,18 @@ int main(int argc, char** argv)
 	  n = write(sockfd, buff2, MAX-6);
 	  signal(SIGINT, notime2);
 	  usleep(3000);
+	  puts(" ~ please re-enter new master password: ");
+	  n = read(0, buff2, MAX-6);
+	  if(n < 0)
+	    puts("Invalid socket");
+	  buff2[n-1] = '\0';
+	  
+	  n = write(sockfd, buff2, MAX-6);
+	  signal(SIGINT, notime2);
+	  usleep(3000);
+	  puts ("         ! Changing master password...");
+	  usleep(1000000);
+	  puts(" ~ Your master password has been successfully saved");
 	  //n = read(sockfd, buff2, MAX-6);
 	 	   bzero(buff2,MAX);
 	  //puts("          ! your master password is now changed");
@@ -330,7 +350,28 @@ int main(int argc, char** argv)
 	  exit(0);
 	}
       if(strncmp(buff, "/view_passes", 12) == 0)
-	puts("Here are your saved passwords");
+	{
+	  //puts("Here are your saved passwords");
+	  puts("          !Accessing password database...");
+	  usleep(1000000);
+	  puts(" ~ Which passwords would you like to view?");
+	  puts(" ~ You can either view '/all' or individual passwords using website names");
+	    n = read(0, buff2, MAX-6);
+	  if(n < 0)
+	    puts("Invalid socket");
+	  buff2[n-1] = '\0';
+	  n = write(sockfd, buff2, MAX-6);
+	  signal(SIGINT, notime2);
+	  usleep(3000);
+	  n = read(sockfd, buff2, MAX-6);
+	  if (strncmp(buff2, "/all", 4) == 0)
+	    {
+	      //TO DO
+	      puts("print all passwords for this user");
+	    }
+	  
+	  bzero(buff2,MAX);
+	}
       if(strncmp(buff, "/help", 5) == 0)
 	{
           puts("     ~ Your options include: ");
