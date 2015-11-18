@@ -102,7 +102,7 @@ int main(int argc, char** argv)
     }
   /*authentication process*/
   puts("                    WELCOME TO ENCLOSED");
-  puts(" ~ Would you like to 'create' an account or 'login' using existing account");
+  puts(" |~| Would you like to 'create' an account or 'login' using existing account");
   n = read(0, buff, MAX-6);
   n = write(sockfd, buff, MAX-6);
   signal(SIGINT, notime2);
@@ -110,7 +110,7 @@ int main(int argc, char** argv)
   /*while user doesn't input create or login display this error message*/
   while((strncmp(buff, "create", 6) != 0) && (strncmp(buff,"login",5) != 0))
     {
-      puts(" ### ERROR: Incorrect command, use: create or login");
+      puts(" [###] ERROR: Incorrect command, use: create or login");
       n = read(0, buff, MAX-6);
       n = write(sockfd, buff, MAX-6);
       signal(SIGINT, notime2);
@@ -119,15 +119,15 @@ int main(int argc, char** argv)
   /*if user enters create go here*/
   if(strncmp(buff, "create", 6) == 0)
     {
-      puts(" ~ enter username: ");
+      puts(" |~| enter username: ");
       n = read(0, nick, MAX-6);
       if(n < 0)
 	puts("Invalid socket");
       nick[n-1] = '\0';
       while(n < 3)
 	{
-	  puts(" ### ERROR: Invalid username, must be at least 3 letters long\n");
-	  puts(" ~ enter username: ");
+	  puts(" [###] ERROR: Invalid username, must be at least 3 letters long\n");
+	  puts(" |~| enter username: ");
 	  n = read(0, nick, MAX-6);
 	  if(n < 0)
 	    puts("Invalid socket");
@@ -137,13 +137,15 @@ int main(int argc, char** argv)
       signal(SIGINT, notime2);
       usleep(3000);
       n = read(sockfd, nick, MAX-6);
-      if(nick[0] != '~')
+            
+	      if(nick[0] != '~')
 	{
 	  puts("server down\n");
       exit(0);
 	}
+      
       /*check for password*/
-      puts(" ~ enter password: ");
+      puts(" |~| enter password: ");
 
       
       //n = read(0, password, MAX-6);
@@ -167,8 +169,8 @@ int main(int argc, char** argv)
       //      puts(password);
       while(i<5)
 	{
-	  puts(" ### ERROR: Invalid password, must be atleast 5 charachters long");
-	  puts(" ~ enter password: ");
+	  puts(" [###] ERROR: Invalid password, must be atleast 5 charachters long");
+	  puts(" |~| enter password: ");
 	  i = 0;
 	  for (;;) {
 	    c = getch();
@@ -187,14 +189,14 @@ int main(int argc, char** argv)
       signal(SIGINT, notime2);
       usleep(3000);
       n = read(sockfd, password, MAX-6);
-      puts("          ! Creating new account...");
-      usleep(1000000);
-      puts(" ~ Account has been successfuly created");
+      puts("          [!] Creating new account...");
+      usleep(500000);
+      puts(" |~| Account has been successfuly created");
     }
   /*if user enters login go here*/
   else if(strncmp(buff, "login", 5) == 0)
     {
-      puts(" ~ enter username: ");
+      puts(" |~| enter username: ");
       n = read(0, nick, MAX-6);
       if(n < 0)
 	puts("Invalid socket");
@@ -204,13 +206,14 @@ int main(int argc, char** argv)
       signal(SIGINT, notime2);
       usleep(3000);
       n = read(sockfd, nick, MAX-6);
+      
       if(nick[0] != '~')
 	{
 	  puts("server down\n");
       exit(0);
 	}
       /*check for password*/
-      puts(" ~ enter password: ");
+      puts(" |~| enter password: ");
       int i = 0;
       for (;;) {
         c = getch();
@@ -239,20 +242,20 @@ int main(int argc, char** argv)
       signal(SIGINT, notime2);
       usleep(3000);
       n = read(sockfd, password, MAX-6);
-      puts("          ! Logging in");
-      usleep(1000000);
+      puts("          [!] Logging in");
+      usleep(500000);
       
     }
   /*introductory message*/
   printf("                    You are now logged in as %s \n", nick);
-  puts("          ! What would you like to do?");
-  puts("     ~ Your options include: ");
-  puts("     ~ /help: to view this message again");
-  puts("     ~ /exit: to quit the program");
-  puts("     ~ /view_passes: to view all saved passwords");
-  puts("     ~ /change_mpass: to change master password");
-  puts("     ~ /add_acc: add new account to your password database");
-  puts("  ~~adding more later on!");
+  puts("          [!] What would you like to do?");
+  puts("     |~| Your options include: ");
+  puts("     |~| /help: to view this message again");
+  puts("     |~| /exit: to quit the program");
+  puts("     |~| /view_passes: to view all saved passwords");
+  puts("     |~| /change_mpass: to change master password");
+  puts("     |~| /add_acc: add new account to your password database");
+  puts("  |~|~adding more later on!");
   while(1)
     {
       n = read(0, buff, MAX-6);
@@ -265,9 +268,9 @@ int main(int argc, char** argv)
       write(sockfd,buff,MAX-6);
       if(strncmp(buff, "/change_mpass", 13) == 0)
 	{
-	  puts("          ! Accessing user database to change master password...");
-	  usleep(1000000);
-	  puts(" ~ please input current master password: ");
+	  puts("          [!] Accessing user database to change master password...");
+	  usleep(500000);
+	  puts(" |~| please input current master password: ");
 	  
 	  n = read(0, buff2, MAX-6);
 	  if(n < 0)
@@ -278,7 +281,7 @@ int main(int argc, char** argv)
 	  signal(SIGINT, notime2);
 	  usleep(300);
 	  //n = read(sockfd, buff2, MAX-6);
-	  puts(" ~ please input new master password: ");
+	  puts(" |~| please input new master password: ");
 	  n = read(0, buff2, MAX-6);
 	  if(n < 0)
 	    puts("Invalid socket");
@@ -287,7 +290,7 @@ int main(int argc, char** argv)
 	  n = write(sockfd, buff2, MAX-6);
 	  signal(SIGINT, notime2);
 	  usleep(3000);
-	  puts(" ~ please re-enter new master password: ");
+	  puts(" |~| please re-enter new master password: ");
 	  n = read(0, buff2, MAX-6);
 	  if(n < 0)
 	    puts("Invalid socket");
@@ -296,9 +299,9 @@ int main(int argc, char** argv)
 	  n = write(sockfd, buff2, MAX-6);
 	  signal(SIGINT, notime2);
 	  usleep(3000);
-	  puts ("         ! Changing master password...");
-	  usleep(1000000);
-	  puts(" ~ Your master password has been successfully saved");
+	  puts ("         [!] Changing master password...");
+	  usleep(500000);
+	  puts(" |~| Your master password has been successfully saved");
 	  //n = read(sockfd, buff2, MAX-6);
 	 	   bzero(buff2,MAX);
 	  //puts("          ! your master password is now changed");
@@ -306,7 +309,7 @@ int main(int argc, char** argv)
 
       if(strncmp(buff, "/add_acc", 8) == 0)
 	{
-	  puts(" ~ please input website for this account: ");
+	  puts(" |~| please input website for this account: ");
 	  
 	  n = read(0, buff2, MAX-6);
 	  if(n < 0)
@@ -317,7 +320,7 @@ int main(int argc, char** argv)
 	  signal(SIGINT, notime2);
 	  usleep(3000);
 	  n = read(sockfd, buff2, MAX-6);
-	  puts(" ~ please input your username for that account: ");
+	  puts(" |~| please input your username for that account: ");
 	  n = read(0, buff2, MAX-6);
 	  if(n < 0)
 	    puts("Invalid socket");
@@ -328,7 +331,7 @@ int main(int argc, char** argv)
 	  usleep(3000);
 	  n = read(sockfd, buff2, MAX-6);
 	  
-	  puts(" ~ please input your password for that account: ");
+	  puts(" |~| please input your password for that account: ");
 	  n = read(0, buff2, MAX-6);
 	  if(n < 0)
 	    puts("Invalid socket");
@@ -352,10 +355,10 @@ int main(int argc, char** argv)
       if(strncmp(buff, "/view_passes", 12) == 0)
 	{
 	  //puts("Here are your saved passwords");
-	  puts("          !Accessing password database...");
-	  usleep(1000000);
-	  puts(" ~ Which passwords would you like to view?");
-	  puts(" ~ You can either view '/all' or individual passwords using website names");
+	  puts("          [!] Accessing password database...");
+	  usleep(500000);
+	  puts(" |~| Which passwords would you like to view?");
+	  puts(" |~| You can either view '/all' or individual passwords using website names");
 	    n = read(0, buff2, MAX-6);
 	  if(n < 0)
 	    puts("Invalid socket");
@@ -374,13 +377,13 @@ int main(int argc, char** argv)
 	}
       if(strncmp(buff, "/help", 5) == 0)
 	{
-          puts("     ~ Your options include: ");
-	  puts("     ~ /help: to view this message again");
-	  puts("     ~ /exit: to quit the program");
-	  puts("     ~ /view_passes: to view all saved passwords");
-	  puts("     ~ /change_mpass: to change master password");
-	  puts("     ~ /add_acc: add new account to your password database");
-	  puts("  ~~adding more later on!");
+          puts("     |~| Your options include: ");
+	  puts("     |~| /help: to view this message again");
+	  puts("     |~| /exit: to quit the program");
+	  puts("     |~| /view_passes: to view all saved passwords");
+	  puts("     |~| /change_mpass: to change master password");
+	  puts("     |~| /add_acc: add new account to your password database");
+	  puts("          |!| adding more later on!");
 	  
 	}
             
@@ -398,7 +401,7 @@ int main(int argc, char** argv)
 	   bzero(buff,MAX);
 	   bzero(buff2, MAX);
 	  //n = write(sockfd, buff, MAX-6);
-	   printf(" ### ERROR: unknown command %s, type: help to view available actions \n", buff);
+	   printf(" [###] ERROR: unknown command %s, type: help to view available actions \n", buff);
 	  //usleep(3000);
 	  //n = read(sockfd, buff, MAX-6);
 	}
