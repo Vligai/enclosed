@@ -279,26 +279,48 @@ int main(int argc, char** argv)
 	  
 	  n = write(sockfd, buff2, MAX-6);
 	  signal(SIGINT, notime2);
-	  usleep(300);
+	  usleep(3000);
 	  //n = read(sockfd, buff2, MAX-6);
 	  puts(" |~| please input new master password: ");
-	  n = read(0, buff2, MAX-6);
+	  n = read(0, password, MAX-6);
 	  if(n < 0)
 	    puts("Invalid socket");
-	  buff2[n-1] = '\0';
+	  password[n-1] = '\0';
 	  
-	  n = write(sockfd, buff2, MAX-6);
 	  signal(SIGINT, notime2);
 	  usleep(3000);
 	  puts(" |~| please re-enter new master password: ");
-	  n = read(0, buff2, MAX-6);
+	  n = read(0, buff, MAX-6);
 	  if(n < 0)
 	    puts("Invalid socket");
-	  buff2[n-1] = '\0';
+	  buff[n-1] = '\0';
 	  
-	  n = write(sockfd, buff2, MAX-6);
 	  signal(SIGINT, notime2);
 	  usleep(3000);
+	  while(strcmp(buff, password) != 0 )
+	    {
+	      puts(" [###] Error: New password didn't match");
+	      puts(" |~| please input new master password: ");
+	      n = read(0, password, MAX-6);
+	      if(n < 0)
+		puts("Invalid socket");
+	      password[n-1] = '\0';
+
+	      signal(SIGINT, notime2);
+	      usleep(3000);
+	      puts(" |~| please re-enter new master password: ");
+	      n = read(0, buff, MAX-6);
+	      if(n < 0)
+		puts("Invalid socket");
+	      buff[n-1] = '\0';
+
+	      signal(SIGINT, notime2);
+	      usleep(3000);
+	      //bzero(password,MAX);
+	      //bzero(buff2,MAX);
+	    }
+	  n = write(sockfd, password, MAX-6);
+	  n = write(sockfd, buff, MAX-6);
 	  puts ("         [!] Changing master password...");
 	  usleep(500000);
 	  puts(" |~| Your master password has been successfully saved");
@@ -339,8 +361,9 @@ int main(int argc, char** argv)
 	  
 	  n = write(sockfd, buff2, MAX-6);
 	  signal(SIGINT, notime2);
-	  usleep(3000);
+	  usleep(50000);
 	  n = read(sockfd, buff2, MAX-6);
+	  puts("          [!] Account has been added");
 	  bzero(buff2,MAX);
 	}
 

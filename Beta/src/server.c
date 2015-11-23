@@ -510,17 +510,41 @@ int id = 0;
 		  puts("          [!] Asking user for desired new master password...");
 		  printf("     |~| User entered desired new master password: ");
 		  n=read(sockfd2, password, MAX-1);
+
 		  password[n-1]='\0';
 		  puts(password);
 		  write (sockfd2, "~", 1);
 
 		  puts("          [!] Asking user to re-enter desired new master password...");
 		  printf("     |~| User entered desired new master password: ");
+		  
 		  n=read(sockfd2, buff, MAX-1);
 		  buff[n-1]='\0';
 		  puts(buff);
 		  write (sockfd2, "~", 1);
-		  
+
+		  while(strcmp(buff,password) != 0)
+		    {
+		      puts(" [###] Error: User's new passwords didn't match");
+		      puts("          [!] Asking user for desired new master password...");
+		      printf("     |~| User entered desired new master password: ");
+		      n=read(sockfd2, password, MAX-1);
+		      
+		      password[n-1]='\0';
+		      puts(password);
+		      write (sockfd2, "~", 1);
+		      
+		      puts("          [!] Asking user to re-enter desired new master password...");
+		      printf("     |~| User entered desired new master password: ");
+		      
+		      n=read(sockfd2, buff, MAX-1);
+		      buff[n-1]='\0';
+		      puts(buff);
+		      write (sockfd2, "~", 1);
+		      //		      bzero(buff,MAX);
+		      //bzero(password,MAX);
+		    }
+		  		  
 		  puts("          [!] User's master password now changed");
 
 		}
