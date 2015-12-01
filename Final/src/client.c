@@ -16,7 +16,7 @@ void notime(int sig)
     {
       puts("\ndiconnecting");
       exit(0);
-    } 
+    }
 }
 void notime2(int sig)
 {
@@ -61,10 +61,11 @@ int main(int argc, char** argv)
   int m;
   char c;
   int con;
-  int nport;	
+  int nport;
   char buff[MAX];
   char buff2[MAX];
   char nick[MAX];
+  char username_output[MAX];
   char password[MAX];
   char hash_pass[MAX];
   signal(SIGINT, notime);
@@ -78,13 +79,13 @@ int main(int argc, char** argv)
   sockfd = socket(AF_INET, SOCK_STREAM, 0);
   /*check is socket is valid*/
   if (sockfd < 0)
-    { 
+    {
       puts("invalid socket");
       exit(0);
     }
   bserv = gethostbyname(argv[1]);
   if (bserv == NULL)
-    { 
+    {
       puts("no host");
       exit(0);
     }
@@ -124,6 +125,7 @@ int main(int argc, char** argv)
       if(n < 0)
 	puts("Invalid socket");
       nick[n-1] = '\0';
+      strncpy(username_output,nick,n);
       while(n < 3)
 	{
 	  puts(" [###] ERROR: Invalid username, must be at least 3 letters long\n");
@@ -137,21 +139,21 @@ int main(int argc, char** argv)
       signal(SIGINT, notime2);
       usleep(3000);
       n = read(sockfd, nick, MAX-6);
-            
+
 	      if(nick[0] != '~')
 	{
 	  puts("server down\n");
       exit(0);
 	}
-      
+
       /*check for password*/
       puts(" |~| enter password: ");
 
-      
+
       //n = read(0, password, MAX-6);
       if(n < 0)
 	puts("Invalid socket");
-      
+
       int i = 0;
       for (;;) {
         c = getch();
@@ -163,9 +165,9 @@ int main(int argc, char** argv)
 	    break;
 	  }
       }
-      
+
       //password[n-1] = '\0';
-      
+
       //      puts(password);
       while(i<5)
 	{
@@ -183,7 +185,7 @@ int main(int argc, char** argv)
 	  }
       }
 	}
-      
+
       sha256(password ,hash_pass);
       n = write(sockfd, hash_pass, MAX-6);
       signal(SIGINT, notime2);
@@ -201,12 +203,12 @@ int main(int argc, char** argv)
       if(n < 0)
 	puts("Invalid socket");
       nick[n-1] = '\0';
-     
+
       n = write(sockfd, nick, MAX-6);
       signal(SIGINT, notime2);
       usleep(3000);
       n = read(sockfd, nick, MAX-6);
-      
+
       if(nick[0] != '~')
 	{
 	  puts("server down\n");
@@ -244,10 +246,10 @@ int main(int argc, char** argv)
       n = read(sockfd, password, MAX-6);
       puts("          [!] Logging in");
       usleep(500000);
-      
+
     }
   /*introductory message*/
-  printf("                    You are now logged in as %s \n", nick);
+  printf("                    You are now logged in as %s \n", username_output);
   puts("          [!] What would you like to do?");
   puts("     |~| Your options include: ");
   puts("     |~| /help: to view this message again");
@@ -260,10 +262,10 @@ int main(int argc, char** argv)
     {
       n = read(0, buff, MAX-6);
       buff[n-1] = '\0';
-      
+
       if(n <= 0)
 	  puts("Invalid read");
-      
+
 /*check commands just simple commands in alpha*/
       write(sockfd,buff,MAX-6);
       if(strncmp(buff, "/change_mpass", 13) == 0)
@@ -271,12 +273,12 @@ int main(int argc, char** argv)
 	  puts("          [!] Accessing user database to change master password...");
 	  usleep(500000);
 	  puts(" |~| please input current master password: ");
-	  
+
 	  n = read(0, buff2, MAX-6);
 	  if(n < 0)
 	    puts("Invalid socket");
 	  buff2[n] = '\0';
-	  
+
 	  n = write(sockfd, buff2, MAX-6);
 	  signal(SIGINT, notime2);
 	  usleep(3000);
@@ -286,7 +288,7 @@ int main(int argc, char** argv)
 	  if(n < 0)
 	    puts("Invalid socket");
 	  password[n-1] = '\0';
-	  
+
 	  signal(SIGINT, notime2);
 	  usleep(3000);
 	  puts(" |~| please re-enter new master password: ");
@@ -294,7 +296,7 @@ int main(int argc, char** argv)
 	  if(n < 0)
 	    puts("Invalid socket");
 	  buff[n-1] = '\0';
-	  
+
 	  signal(SIGINT, notime2);
 	  usleep(3000);
 	  while(strcmp(buff, password) != 0 )
@@ -332,12 +334,12 @@ int main(int argc, char** argv)
       if(strncmp(buff, "/add_acc", 8) == 0)
 	{
 	  puts(" |~| please input website for this account: ");
-	  
+
 	  n = read(0, buff2, MAX-6);
 	  if(n < 0)
 	    puts("Invalid socket");
 	  buff2[n-1] = '\0';
-	  
+
 	  n = write(sockfd, buff2, MAX-6);
 	  signal(SIGINT, notime2);
 	  usleep(3000);
@@ -347,18 +349,18 @@ int main(int argc, char** argv)
 	  if(n < 0)
 	    puts("Invalid socket");
 	  buff2[n-1] = '\0';
-	  
+
 	  n = write(sockfd, buff2, MAX-6);
 	  signal(SIGINT, notime2);
 	  usleep(3000);
 	  n = read(sockfd, buff2, MAX-6);
-	  
+
 	  puts(" |~| please input your password for that account: ");
 	  n = read(0, buff2, MAX-6);
 	  if(n < 0)
 	    puts("Invalid socket");
 	  buff2[n-1] = '\0';
-	  
+
 	  n = write(sockfd, buff2, MAX-6);
 	  signal(SIGINT, notime2);
 	  usleep(50000);
@@ -395,7 +397,7 @@ int main(int argc, char** argv)
 	      //TO DO
 	      puts("print all passwords for this user");
 	    }
-	  
+
 	  bzero(buff2,MAX);
 	}
       if(strncmp(buff, "/help", 5) == 0)
@@ -407,9 +409,9 @@ int main(int argc, char** argv)
 	  puts("     |~| /change_mpass: to change master password");
 	  puts("     |~| /add_acc: add new account to your password database");
 	  puts("          |!| adding more later on!");
-	  
+
 	}
-            
+
       /*
       if(buff[0] != '~')
 	{
@@ -420,7 +422,7 @@ int main(int argc, char** argv)
       /*if user inputs non of the above commands*/
       else if(((strncmp(buff, "/help", 5) != 0) && (strncmp(buff, "/exit", 5) != 0) && (strncmp(buff, "/add_acc", 8) != 0) && (strncmp(buff, "/view_passes", 12) != 0) && (strncmp(buff, "/change_mpass", 13) != 0)))
 	{
-	  
+
 	   bzero(buff,MAX);
 	   bzero(buff2, MAX);
 	  //n = write(sockfd, buff, MAX-6);
@@ -435,4 +437,4 @@ int main(int argc, char** argv)
   free(hash_pass);
   free(nick);
   free(buff2);
-}  
+}
