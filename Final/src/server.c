@@ -570,6 +570,19 @@ int id = 0;
 		  BF_ecb_encrypt((unsigned char *)password,enc_pass,key,BF_ENCRYPT);
 		  puts(enc_pass);
 		  write(sockfd2, "~", 1);
+	           //database check
+              int x = 0;
+              int y = 0;
+              struct Databasep *db = connp->db;
+
+              for(x = 0; x < MAX_ROWS; x++) {
+                struct Passwords *cur = &db->rows[x];
+
+                if(cur->set) {
+                  y++;
+                }
+              }
+              id = y;
 		  Database_setp(connp, id, website, nick, password);
 		  Database_writep(connp);
 		  
