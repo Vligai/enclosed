@@ -3,12 +3,17 @@
   client side of the password manager
   regular sockets client, upgrade to SSL in Beta
 */
-#include "enclosed.h"
 #define _CLIENT_H_
 #define SHA256_DIGEST_LENGTH 32
-#include <termios.h>
-#include <unistd.h>
+#include "enclosed.h"
 int sockfd;
+
+
+#define SIZE 8
+//Passworddatabase
+
+
+
 /*called when user disconnects from server*/
 void notime(int sig)
 {
@@ -68,6 +73,14 @@ int main(int argc, char** argv)
   char username_output[MAX];
   char password[MAX];
   char hash_pass[MAX];
+  //BF Password to use as a key
+  //Crypto
+  unsigned char *enc_pass = calloc(SIZE+1,sizeof(char));//use this buffer for the encryption while bzero it to clear it.
+unsigned char *enc_pass2 = calloc(SIZE+1,sizeof(char));//use this buffer for the encryption while bzero it to clear it.
+
+  BF_KEY* key = calloc(1,sizeof(BF_KEY));
+  char connection_encryption[MAX];
+  //
   signal(SIGINT, notime);
   /*check for number of arguments when starting a client*/
   if(argc < 3)
@@ -187,6 +200,7 @@ int main(int argc, char** argv)
 	}
 
       sha256(password ,hash_pass);
+      BF_set_key(key,SIZE,(const unsigned char*)hash_pass);   //Set key here
       n = write(sockfd, hash_pass, MAX-6);
       signal(SIGINT, notime2);
       usleep(3000);
@@ -203,7 +217,7 @@ int main(int argc, char** argv)
       if(n < 0)
 	puts("Invalid socket");
       nick[n-1] = '\0';
-
+      strncpy(username_output,nick,n);
       n = write(sockfd, nick, MAX-6);
       signal(SIGINT, notime2);
       usleep(3000);
@@ -219,8 +233,8 @@ int main(int argc, char** argv)
       int i = 0;
       for (;;) {
         c = getch();
-	password[i] = c;
-	i++;
+      	password[i] = c;
+      	i++;
         if(c == '\n')
 	  {
 	    //i=0;
@@ -240,6 +254,9 @@ int main(int argc, char** argv)
 	}
       */
       sha256(password ,hash_pass);
+      BF_set_key(key,SIZE,(const unsigned char*)hash_pass);   //Set key here
+
+
       n = write(sockfd, hash_pass, MAX-6);
       signal(SIGINT, notime2);
       usleep(3000);
@@ -267,6 +284,7 @@ int main(int argc, char** argv)
 	  puts("Invalid read");
 
 /*check commands just simple commands in alpha*/
+
       write(sockfd,buff,MAX-6);
       if(strncmp(buff, "/change_mpass", 13) == 0)
 	{
@@ -278,8 +296,20 @@ int main(int argc, char** argv)
 	  if(n < 0)
 	    puts("Invalid socket");
 	  buff2[n] = '\0';
+    //Encrypt
+    sha256(buff2 ,hash_pass);
+    puts(hash_pass);
 
-	  n = write(sockfd, buff2, MAX-6);
+
+
+    BF_ecb_encrypt(hash_pass,enc_pass,key,BF_ENCRYPT);
+    //
+	  n = write(sockfd, enc_pass, MAX-6);
+    memset(enc_pass,0,strlen(enc_pass));
+    //enc_pass[0]='\0';
+
+
+
 	  signal(SIGINT, notime2);
 	  usleep(3000);
 	  //n = read(sockfd, buff2, MAX-6);
@@ -289,9 +319,11 @@ int main(int argc, char** argv)
 	    puts("Invalid socket");
 	  password[n-1] = '\0';
 
+
 	  signal(SIGINT, notime2);
 	  usleep(3000);
 	  puts(" |~| please re-enter new master password: ");
+    memset(buff,0,strlen(buff));
 	  n = read(0, buff, MAX-6);
 	  if(n < 0)
 	    puts("Invalid socket");
@@ -321,8 +353,16 @@ int main(int argc, char** argv)
 	      //bzero(password,MAX);
 	      //bzero(buff2,MAX);
 	    }
-	  n = write(sockfd, password, MAX-6);
-	  n = write(sockfd, buff, MAX-6);
+
+
+      BF_ecb_encrypt(password,enc_pass,key,BF_ENCRYPT);
+      n = write(sockfd, enc_pass, MAX-6);
+      memset(enc_pass,0,strlen(enc_pass));
+      usleep(300);
+
+      BF_ecb_encrypt(buff,enc_pass2,key,BF_ENCRYPT);
+  	  n = write(sockfd, enc_pass2, MAX-6);
+      memset(enc_pass2,0,strlen(enc_pass2));
 	  puts ("         [!] Changing master password...");
 	  usleep(500000);
 	  puts(" |~| Your master password has been successfully saved");

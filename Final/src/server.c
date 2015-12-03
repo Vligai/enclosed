@@ -5,11 +5,6 @@
 
 #define _SERVER_H_
 #include "enclosed.h"
-#include <stdio.h>
-#include <assert.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <string.h>
 #define MAX_DATA 512
 #define MAX_ROWS 100
 char nick[MAX];
@@ -114,11 +109,11 @@ void Database_setp(struct Connectionp *connp, int id, const char *account, const
 
         struct Passwords *pass = &connp->db->rows[id];
 
-      //if(user->set) 
+      //if(user->set)
         //{
           //      id++;
         //}
-      
+
         pass->set = 1;
         //we have to find a better way to do this rather than strncpy
         char *res = strncpy(pass->account, account, MAX_DATA);
@@ -248,7 +243,7 @@ void Database_set(struct Connection *conn, int id, const char *username, const c
 
         struct Users *user = &conn->db->rows[id];
 
-      /*if(user->set) 
+      /*if(user->set)
         {
                 id++;
         }
@@ -320,7 +315,7 @@ void sfault2(int sig)
     }
 }
 /*
-void compute_md5(char *str, unsigned char digest[16]) 
+void compute_md5(char *str, unsigned char digest[16])
 {
   MD5_CTX ctx;
   MD5_Init(&ctx);
@@ -347,16 +342,18 @@ int main(int argc, char** argv)
 {
   struct sockaddr_in srv;
   struct sockaddr_in cli;
-  
+
   int sockfd;
   int sockfd2;
   int nport;
   int scli;
   int n;
-  int counter; 
+  int counter;
   int pid;
   char buff[MAX];
   char buff2[MAX];
+  char secured[MAX]; //output for decrytption change m_pass 1
+  char secured2[MAX]; //output for change m_pass2
   char website[MAX];
   char username[MAX];
   char pass[MAX];
@@ -365,7 +362,7 @@ int main(int argc, char** argv)
   //crypto
   unsigned char *enc_pass = calloc(SIZE+1,sizeof(char));
   BF_KEY *key = calloc(1,sizeof(BF_KEY));
-  
+
   //database stuff
 char *filename = "Data.db";
 char *filenamep = "pass.db";
@@ -392,15 +389,15 @@ int id = 0;
   if(nport <= 0 || nport > 65535)
     {
       puts("Invalid port num");
-      exit(0);  
+      exit(0);
     }
   srv.sin_family = AF_INET;
   srv.sin_port = htons(nport);
   srv.sin_addr.s_addr = INADDR_ANY;
-  
+
   if(bind(sockfd, (struct sockaddr *)&srv, sizeof(srv)) < 0)
     {
-      puts("Invalid bind");	
+      puts("Invalid bind");
       exit(0);
     }
   listen(sockfd, 5);
@@ -411,7 +408,7 @@ int id = 0;
       /*check if connection is valid*/
       if(sockfd2  < 0)
 	{
-	  puts("Invalid connection");      
+	  puts("Invalid connection");
 	  exit(0);
 	}
       /*check if fork is valid*/
@@ -422,7 +419,7 @@ int id = 0;
 	}
       if(pid==0)
 	{
-	  close(sockfd);			
+	  close(sockfd);
 	  n = read(sockfd2, buff, MAX-1);
 	  while((strncmp(buff, "create", 6) != 0) && (strncmp(buff,"login",5) != 0))
 	    {
@@ -437,10 +434,11 @@ int id = 0;
 	      nick[n-1]='\0';
 	      printf("     |~| Username: ");
 	      puts(nick);
-	      
+
 	      write (sockfd2, "~", 1);
 	      n=read(sockfd2, password, MAX-1);
 	      password[n-1] = '\0';
+        BF_set_key(key,SIZE,(const unsigned char*)password);
 	      //	  unsigned char md5_pass[16];
 	      printf("     |~| Password: ");
 	      /*hashing master password to compare it with password inside the db*/
@@ -451,10 +449,10 @@ int id = 0;
 	      int i = 0;
 	      int j = 0;
 	      struct Database *db = conn->db;
-	      
+
 	      for(i = 0; i < MAX_ROWS; i++) {
 		struct Users *cur = &db->rows[i];
-		
+
 		if(cur->set) {
 		  j++;
 		}
@@ -469,13 +467,13 @@ int id = 0;
 	   check for username in he name of data fiels*/
 	  else if (strncmp(buff, "login", 5) == 0)
 	    {
-	      //	      close(sockfd);			
+	      //	      close(sockfd);
 	      n=read(sockfd2, nick, MAX-1);
 	      nick[n-1]='\0';
 	      printf("     |~| %s",nick);
 	      puts(" has connected to password manager, check for this username in the database");
 	      write (sockfd2, "~", 1);
-	      
+
 	      /*password - user master password used to log user in*/
 	      n=read(sockfd2, password, MAX-1);
 	      password[n-1] = '\0';
@@ -504,39 +502,47 @@ int id = 0;
 
 		  n=read(sockfd2, buff2, MAX-1);
 		  buff2[n-1]='\0';
-		  puts(buff2);
+      BF_ecb_encrypt(buff2,secured,key,BF_DECRYPT);
+		  puts(secured);
+      memset(secured,0,strlen(secured));
+      //secured[0]='\0';
 		  write (sockfd2, "~", 1);
-		  
+
 		  puts("          [!] Asking user for desired new master password...");
 		  printf("     |~| User entered desired new master password: ");
 		  n=read(sockfd2, password, MAX-1);
 
 		  password[n-1]='\0';
-		  puts(password);
+      BF_ecb_encrypt(password,secured,key,BF_DECRYPT);
+		  puts(secured);
 		  write (sockfd2, "~", 1);
-
 		  puts("          [!] Asking user to re-enter desired new master password...");
 		  printf("     |~| User entered desired new master password: ");
-		  
+      bzero(buff,strlen(buff));
 		  n=read(sockfd2, buff, MAX-1);
 		  buff[n-1]='\0';
-		  puts(buff);
+      //puts(buff);
+      BF_ecb_encrypt(buff,secured2,key,BF_DECRYPT);
+
+
+
+		  puts(secured2);
 		  write (sockfd2, "~", 1);
 
-		  while(strcmp(buff,password) != 0)
+		  while(strcmp(secured,secured2) != 0)
 		    {
 		      puts(" [###] Error: User's new passwords didn't match");
 		      puts("          [!] Asking user for desired new master password...");
 		      printf("     |~| User entered desired new master password: ");
 		      n=read(sockfd2, password, MAX-1);
-		      
+
 		      password[n-1]='\0';
 		      puts(password);
 		      write (sockfd2, "~", 1);
-		      
+
 		      puts("          [!] Asking user to re-enter desired new master password...");
 		      printf("     |~| User entered desired new master password: ");
-		      
+
 		      n=read(sockfd2, buff, MAX-1);
 		      buff[n-1]='\0';
 		      puts(buff);
@@ -544,7 +550,7 @@ int id = 0;
 		      //		      bzero(buff,MAX);
 		      //bzero(password,MAX);
 		    }
-		  		  
+
 		  puts("          [!] User's master password now changed");
 
 		}
@@ -585,7 +591,7 @@ int id = 0;
               id = y;
 		  Database_setp(connp, id, website, nick, password);
 		  Database_writep(connp);
-		  
+
 		}
 
 	      if(strncmp(buff, "/exit", 5) == 0)
@@ -607,9 +613,9 @@ int id = 0;
 		{
 		  /*if user input unknown command*/
 		  printf(" [###] ERROR: user has input unknown command: %s \n", buff);
-		  
+
 		}
-	    }	  
+	    }
 	}
       else
 	close(sockfd2);
