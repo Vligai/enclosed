@@ -6,7 +6,7 @@
 #include <string.h>
 
 #define MAX_DATA 512
-#define MAX_ROWS 100
+#define MAX_ROWS 1000
 
 //#include "enclosed.h"
 

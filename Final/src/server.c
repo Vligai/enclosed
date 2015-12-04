@@ -6,7 +6,7 @@
 #define _SERVER_H_
 #include "enclosed.h"
 #define MAX_DATA 512
-#define MAX_ROWS 100
+#define MAX_ROWS 1000
 char nick[MAX];
 char password[MAX];
 
@@ -585,11 +585,11 @@ int id = 0;
                 struct Passwords *cur = &db->rows[x];
 
                 if(cur->set) {
-                  y++;
-                }
-              }
+                 	 y++;
+               		 }
+              		}
               id = y;
-		  Database_setp(connp, id, website, nick, password);
+		  Database_setp(connp, id, website, nick, enc_pass);
 		  Database_writep(connp);
 
 		}

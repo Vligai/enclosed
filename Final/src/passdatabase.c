@@ -5,7 +5,7 @@
 #include <string.h>
 
 #define MAX_DATA 512
-#define MAX_ROWS 100
+#define MAX_ROWS 1000
 
 struct Passwords {
         int id;
@@ -24,9 +24,19 @@ struct Connectionp {
 };
 void Passwords_print(struct Passwords *pass)
 {
-        printf("%d %s %s %s\n",
-                pass->id, pass->account,pass->username, pass->password);
+        printf("%s %s\n",
+                pass->username, pass->password);
 }
+
+void Passwords_print1(struct Passwords *pass,const char *account)
+{
+	const char *find = pass->account;
+	if (strcmp((const char*)account,(const char*)find)==0){
+        printf("%s %s\n",
+                pass->username, pass->password);
+}
+}
+
 void die(const char *message)
 {
         if(errno) {
@@ -108,7 +118,7 @@ void Database_setp(struct Connectionp *conn, int id, const char *account, const 
         }
 */
         pass->set = 1;
-        //we have to find a better way to do this rather than strncpy
+ 
         char *res = strncpy(pass->account, account, MAX_DATA);
         if(!res) die("Account copy failed");
 
@@ -150,6 +160,21 @@ void Database_listp(struct Connectionp *conn)
         }
 }
 
+
+void Database_listp1(struct Connectionp *conn,const char *account)
+{
+        int i = 0;
+        struct Databasep *db = conn->db;
+
+        for(i = 0; i < MAX_ROWS; i++) {
+                struct Passwords *cur = &db->rows[i];
+
+                if(cur->set) {
+                        Passwords_print1(cur, account);
+                }
+        }
+}
+
 int main(int argc, char *argv[])
 {
         if(argc < 3) die("USAGE: Database <dbfile> <action> [action params]");
@@ -157,9 +182,9 @@ int main(int argc, char *argv[])
         char *filenamep = argv[1];
         char action = argv[2][0];
         struct Connectionp *conn = Database_openp(filenamep, action);
-        int id = 0;
-
-        if(argc > 3) id = atoi(argv[3]);
+	const char *acc = argv[3];
+	int id =0;
+       //if(argc > 3) id = atoi(argv[3]);
         if(id >= MAX_ROWS) die("There's not that many records.");
 
         switch(action) {
@@ -170,8 +195,8 @@ int main(int argc, char *argv[])
 
                 case 'g':
                         if(argc != 4) die("Need an id to get");
-
-                        Database_getp(conn, id);
+			Database_listp1(conn, acc);
+                        //Database_getp(conn, id);
                         break;
                 case 's':
                         if(argc != 6) die("Need id, username, password to set");
