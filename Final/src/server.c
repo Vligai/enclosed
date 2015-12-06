@@ -156,32 +156,6 @@ void Database_listp(struct Connectionp *connp)
                 }
         }
 }
-/*
-void Database_listp1(struct Connectionp *conn,const char *account)
-{
-        int i = 0;
-        struct Databasep *db = conn->db;
-
-        for(i = 0; i < MAX_ROWS; i++) {
-                struct Passwords *cur = &db->rows[i];
-
-                if(cur->set) {
-                        Passwords_print1(cur, account);
-                }
-        }
-}
-
-void Passwords_print1(struct Passwords *pass,const char *account, char *result)
-{
-        const char *find = pass->account;
-        if (strcmp((const char*)account,(const char*)find)==0){
-        //printf("%s %s\n",
-          //      pass->username, pass->password);
-        result = pass->password;
-}
-}
-*/
-//Database_function
 struct Users {
         int id;
         int set;
@@ -363,53 +337,31 @@ void sfault2(int sig)
     }
 }
 
-
-/*void compute_md5(char *str, unsigned char digest[16])
-{
-  MD5_CTX ctx;
-  MD5_Init(&ctx);
-  MD5_Update(&ctx, str, strlen(str));
-  MD5_Final(digest, &ctx);
-}
-*/
-/*function used to md5 hash password*/
-
-/*char *md5_hash(char *str, unsigned char digest[16])
-{
-  int i = 0;
-  char result[1024];
-  MD5((unsigned char *)str,strlen(str),result);
-  for(; i < 16; i++)
-    {
-      sprintf(&result[i*2],"%02x",(unsigned int)result[i]);
-    }
-  return result;
-}
-*/
 /*main*/
 int main(int argc, char** argv)
 {
-  struct sockaddr_in srv;
-  struct sockaddr_in cli;
+	struct sockaddr_in srv;
+	struct sockaddr_in cli;
 
-  int sockfd;
-  int sockfd2;
-  int nport;
-  int scli;
-  int n;
-  int counter;
-  int pid;
-  char buff[MAX];
-  char buff2[MAX];
-  char secured[MAX]; //output for decrytption change m_pass 1
-  char secured2[MAX]; //output for change m_pass2
-  char website[MAX];
-  char username[MAX];
-  char pass[MAX];
-  char command[MAX];
-  signal(SIGINT, sfault1);
-char *result;
-const char *account;
+	int sockfd;
+	int sockfd2;
+	int nport;
+	int scli;
+	int n;
+	int counter;
+	int pid;
+	char buff[MAX];
+	char buff2[MAX];
+	char secured[MAX]; //output for decrytption change m_pass 1
+	char secured2[MAX]; //output for change m_pass2
+	char website[MAX];
+	char username[MAX];
+	char pass[MAX];
+	char command[MAX];
+	signal(SIGINT, sfault1);
+
+	char *result;
+	const char *account;
   //crypto
   unsigned char *enc_pass = calloc(SIZE+1,sizeof(char));
   BF_KEY *key = calloc(1,sizeof(BF_KEY));
