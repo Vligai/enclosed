@@ -158,6 +158,8 @@ void Database_listp(struct Connectionp *connp)
 }
 
 
+
+
 //Database_function
 struct Users {
         int id;
@@ -287,6 +289,33 @@ void Database_list(struct Connection *conn)
         }
 }
 
+
+// Check if the username and password are in the database if yes let the user login
+
+void Users_check_final(struct Users *user,const char *username, const char *password)
+{
+        const char *find_user = user->username;
+        const char *find_pass = user->password;
+        if((strcmp((const char*)username,(const char*)find_user)==0) && (strcmp((const char*)password,(const char*)find_pass)==0)){
+printf("hello");        
+}
+}
+
+//search the database for the checking of username and password
+
+void Users_check( struct Connection *conn, const char *username, const char *password)
+{
+	int i=0;
+	struct Database *db = conn->db;
+
+	for(i=0; i < MAX_ROWS; i++) {
+		struct Users *cur = &db-> rows[i];
+
+		if(cur->set) {
+			Users_check_final(cur, username, password);
+		}
+	}
+}
 
 
 
@@ -459,6 +488,11 @@ int id = 0;
 	      }
 	      id = j;
 	      BF_set_key(key,SIZE,(const unsigned char*)password);
+		char *filenamep = strcat(nick, ".db");
+		char action ='c'; 
+		struct Connectionp *connp = Database_openp(filename, action);
+		Database_createp(connp);
+		Database_writep(connp);
 	      Database_set(conn, id, nick, password);
               Database_write(conn);
 
@@ -483,8 +517,10 @@ int id = 0;
 	      //md5_hash(password, md5_pass);
 	      puts(password);
 	      BF_set_key(key,SIZE,(const unsigned char*)password);
+
 	      write(sockfd2, "~", 1);
 	    }
+
 	  while(1)
 	    {
 	      close(sockfd);
