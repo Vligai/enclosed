@@ -478,23 +478,26 @@ int id = 0;
 	      int i = 0;
 	      int j = 0;
 	      struct Database *db = conn->db;
-
+		BF_set_key(key,SIZE,(const unsigned char*)password);
 	      for(i = 0; i < MAX_ROWS; i++) {
 		struct Users *cur = &db->rows[i];
 
 		if(cur->set) {
 		  j++;
-		}
-	      }
-	      id = j;
-	      BF_set_key(key,SIZE,(const unsigned char*)password);
+			}
+			}
+			id = j;
+			Database_set(conn, id, nick, password);
+                Database_write(conn);
+		
+	     
+	     
+	      //BF_set_key(key,SIZE,(const unsigned char*)password);
 		char *filenamep = strcat(nick, ".db");
 		char action ='c'; 
-		struct Connectionp *connp = Database_openp(filename, action);
+		struct Connectionp *connp = Database_openp(filenamep, action);
 		Database_createp(connp);
 		Database_writep(connp);
-	      Database_set(conn, id, nick, password);
-              Database_write(conn);
 
 	    }
 	  /*nick - username user is going to log in with
