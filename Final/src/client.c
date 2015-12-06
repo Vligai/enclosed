@@ -423,7 +423,7 @@ unsigned char *enc_pass2 = calloc(SIZE+1,sizeof(char));//use this buffer for the
 	  puts("          [!] Accessing password database...");
 	  usleep(500000);
 	  puts(" |~| Which passwords would you like to view?");
-	  puts(" |~| You can either view '/all' or individual passwords using website names");
+	  puts(" |~| Enter the account name you want");
 	    n = read(0, buff2, MAX-6);
 	  if(n < 0)
 	    puts("Invalid socket");
@@ -431,14 +431,12 @@ unsigned char *enc_pass2 = calloc(SIZE+1,sizeof(char));//use this buffer for the
 	  n = write(sockfd, buff2, MAX-6);
 	  signal(SIGINT, notime2);
 	  usleep(3000);
-	  n = read(sockfd, buff2, MAX-6);
-	  if (strncmp(buff2, "/all", 4) == 0)
-	    {
-	      //TO DO
-	      puts("print all passwords for this user");
-	    }
-
+	  n = read(sockfd, buff2, MAX-1);
+	  buff2[n-1] = '\0';
+	  puts(buff2);
 	  bzero(buff2,MAX);
+	  //	  n = read(sockfd, buff, MAX-6);
+	  //puts(buff);
 	}
       if(strncmp(buff, "/help", 5) == 0)
 	{

@@ -161,7 +161,7 @@ void Database_listp(struct Connectionp *conn)
 }
 
 
-void Database_listp1(struct Connectionp *conn,const char *account)
+void Database_listp1(struct Connectionp *conn,const char *account, char *result)
 {
         int i = 0;
         struct Databasep *db = conn->db;
@@ -170,19 +170,23 @@ void Database_listp1(struct Connectionp *conn,const char *account)
                 struct Passwords *cur = &db->rows[i];
 
                 if(cur->set) {
-                        Passwords_print1(cur, account);
+                               const char *find = cur->account;
+        		if (strcmp((const char*)account,(const char*)find)==0){
+        	//	printf("%s %s\n",
+                //cur->username, cur->password);
+			result = cur->account;
                 }
         }
 }
-
+}
 int main(int argc, char *argv[])
 {
         if(argc < 3) die("USAGE: Database <dbfile> <action> [action params]");
-
+	char *result;
         char *filenamep = argv[1];
         char action = argv[2][0];
         struct Connectionp *conn = Database_openp(filenamep, action);
-	const char *acc = argv[3];
+	const char *account = argv[3];
 	int id =0;
        //if(argc > 3) id = atoi(argv[3]);
         if(id >= MAX_ROWS) die("There's not that many records.");
@@ -195,7 +199,22 @@ int main(int argc, char *argv[])
 
                 case 'g':
                         if(argc != 4) die("Need an id to get");
-			Database_listp1(conn, acc);
+			  int i = 0;
+        			struct Databasep *db = conn->db;
+
+        			for(i = 0; i < MAX_ROWS; i++) {
+                		struct Passwords *cur = &db->rows[i];
+
+                		if(cur->set) {
+                               		const char *find = cur->account;
+                        		if (strcmp((const char*)account,(const char*)find)==0){
+                //      printf("%s %s\n",
+                //cur->username, cur->password);
+                    		    result = cur->password;
+                }
+        }
+}
+			puts(result);
                         //Database_getp(conn, id);
                         break;
                 case 's':

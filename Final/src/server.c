@@ -2,7 +2,7 @@
   server side of the enclosed-password manager
   uses regular sockets during alpha, will use SSL in Beta version
 */
-
+#include <stdbool.h>
 #define _SERVER_H_
 #include "enclosed.h"
 #define MAX_DATA 512
@@ -156,10 +156,31 @@ void Database_listp(struct Connectionp *connp)
                 }
         }
 }
+/*
+void Database_listp1(struct Connectionp *conn,const char *account)
+{
+        int i = 0;
+        struct Databasep *db = conn->db;
 
+        for(i = 0; i < MAX_ROWS; i++) {
+                struct Passwords *cur = &db->rows[i];
 
+                if(cur->set) {
+                        Passwords_print1(cur, account);
+                }
+        }
+}
 
-
+void Passwords_print1(struct Passwords *pass,const char *account, char *result)
+{
+        const char *find = pass->account;
+        if (strcmp((const char*)account,(const char*)find)==0){
+        //printf("%s %s\n",
+          //      pass->username, pass->password);
+        result = pass->password;
+}
+}
+*/
 //Database_function
 struct Users {
         int id;
@@ -288,18 +309,16 @@ void Database_list(struct Connection *conn)
                 }
         }
 }
-
-
-// Check if the username and password are in the database if yes let the user login
-
 void Users_check_final(struct Users *user,const char *username, const char *password)
 {
         const char *find_user = user->username;
         const char *find_pass = user->password;
         if((strcmp((const char*)username,(const char*)find_user)==0) && (strcmp((const char*)password,(const char*)find_pass)==0)){
-printf("hello");        
+printf("hello");	
 }
 }
+
+// Check if the username and password are in the database if yes let the user login
 
 //search the database for the checking of username and password
 
@@ -343,8 +362,9 @@ void sfault2(int sig)
       exit(0);
     }
 }
-/*
-void compute_md5(char *str, unsigned char digest[16])
+
+
+/*void compute_md5(char *str, unsigned char digest[16])
 {
   MD5_CTX ctx;
   MD5_Init(&ctx);
@@ -388,6 +408,8 @@ int main(int argc, char** argv)
   char pass[MAX];
   char command[MAX];
   signal(SIGINT, sfault1);
+char *result;
+const char *account;
   //crypto
   unsigned char *enc_pass = calloc(SIZE+1,sizeof(char));
   BF_KEY *key = calloc(1,sizeof(BF_KEY));
@@ -519,11 +541,13 @@ int id = 0;
 	      /*hashing master password to compare it with password inside the db*/
 	      //md5_hash(password, md5_pass);
 	      puts(password);
-	      BF_set_key(key,SIZE,(const unsigned char*)password);
+	     // BF_set_key(key,SIZE,(const unsigned char*)password);
 
 	      write(sockfd2, "~", 1);
-	    }
-
+		printf("let me check that");
+		Users_check(conn, nick, password);
+	}
+	
 	  while(1)
 	    {
 	      close(sockfd);
@@ -646,7 +670,34 @@ int id = 0;
 		}
 	      /*add print whole file of the user db*/
 	      if(strncmp(buff, "/view_passes", 12) == 0)
-		puts("Here are your saved passwords");
+		{
+		n=read(sockfd2, website, MAX-1);
+                  website[n-1]='\0';
+                  printf("     |~| Account name requested: ");
+                  puts(website);
+			account = website;
+			int i = 0;
+                               
+				struct Databasep *db = connp->db;
+                                for(i = 0; i < MAX_ROWS; i++) {
+                                struct Passwords *cur = &db->rows[i];
+
+                                if(cur->set) {
+                                        const char *find = cur->account;
+                                        if (strcmp((const char*)account,(const char*)find)==0){
+                      printf("%s %s\n",
+                	cur->username, cur->password);
+			
+                                    result = cur->password;
+                }
+        }
+}
+                printf("hellowm\n");        
+		puts(result);
+		n = write (sockfd2, result, MAX-6);			
+                  write (sockfd2, "~", 1);
+}
+//		puts("Here are your saved passwords");
 
 	      else if(((strncmp(buff, "/help", 5) != 0) && (strncmp(buff, "/exit", 5) != 0) && (strncmp(buff, "/add_acc", 8) != 0) && (strncmp(buff, "/view_passes", 12) != 0) && (strncmp(buff, "/change_mpass", 13) != 0)))
 		{
