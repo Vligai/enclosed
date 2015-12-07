@@ -9,7 +9,7 @@
 #define MAX_ROWS 1000
 char nick[MAX];
 char password[MAX];
-
+char vlad[MAX];
 #define SIZE 8
 //Passworddatabase
 
@@ -360,6 +360,7 @@ int main(int argc, char** argv)
 
 	//database stuff
 	char *filename = "Data.db";
+	//char *filenamep = "pass.db";
 	char *filenamep = "pass.db";
 	char action;
 	struct Connection *conn = Database_open(filename, action);
@@ -443,6 +444,8 @@ int main(int argc, char** argv)
 	      					puts(password);
 	      					write(sockfd2, "~", 1);
 	      					//database check
+						//char *filenamep = strcat(nick, ".db");
+						//struct Connectionp *connp  = Database_openp(filenamep, action);
 	      					int i = 0;
 	      					int j = 0;
 	      					struct Database *db = conn->db;
@@ -462,8 +465,9 @@ int main(int argc, char** argv)
 	     
 	     
 	      					//BF_set_key(key,SIZE,(const unsigned char*)password);
-						char *filenamep = strcat(nick, ".db");
-						char action ='c'; 
+					 	char *filenamep = strcat(nick, ".db");
+						char action ='c';
+						 
 						struct Connectionp *connp = Database_openp(filenamep, action);
 						Database_createp(connp);
 						Database_writep(connp);
@@ -589,10 +593,10 @@ int main(int argc, char** argv)
 		  						puts(website);
 		  						write (sockfd2, "~", 1);
 
-		  						n=read(sockfd2, nick, MAX-1);
-		  						nick[n-1]='\0';
+		  						n=read(sockfd2, vlad, MAX-1);
+		  						vlad[n-1]='\0';
 		  						printf("     |~| Username: ");
-		  						puts(nick);
+		  						puts(vlad);
 		  						write (sockfd2, "~", 1);
 
 		  						n=read(sockfd2, password, MAX-1);
@@ -600,9 +604,13 @@ int main(int argc, char** argv)
 		  						printf("     |~| Password: ");
 		  						BF_ecb_encrypt((unsigned char *)password,enc_pass,key,BF_ENCRYPT);
 		  						puts(enc_pass);
+								puts(nick);
+								puts(filenamep);
 		  						write(sockfd2, "~", 1);
 	          						 //database check
-              
+								//char *filenamep = strcat(nick, ".db");
+								
+								//struct Connectionp *connp  = Database_openp(filenamep, action);              
 								int x = 0;
               							int y = 0;
               							struct Databasep *db = connp->db;
@@ -615,7 +623,10 @@ int main(int argc, char** argv)
                		 						}
               							}
               							id = y;
-		  						Database_setp(connp, id, website, nick, enc_pass);
+								//char *filenamep = strcat(nick, ".db");
+
+                                                                struct Connectionp *connp  = Database_openp(nick, action);
+		  						Database_setp(connp, id, website, vlad, enc_pass);
 		  						Database_writep(connp);
 
 							}			
