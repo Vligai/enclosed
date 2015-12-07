@@ -362,209 +362,212 @@ int main(int argc, char** argv)
 
 	char *result;
 	const char *account;
-  //crypto
-  unsigned char *enc_pass = calloc(SIZE+1,sizeof(char));
-  BF_KEY *key = calloc(1,sizeof(BF_KEY));
+	//crypto
+	unsigned char *enc_pass = calloc(SIZE+1,sizeof(char));
+	BF_KEY *key = calloc(1,sizeof(BF_KEY));
 
-  //database stuff
-char *filename = "Data.db";
-char *filenamep = "pass.db";
-char action;
-struct Connection *conn = Database_open(filename, action);
-struct Connectionp *connp  = Database_openp(filenamep, action);
-int id = 0;
-  /*check numer of arguments when starting up server*/
-  if(argc < 2)
-    {
-      puts("usage: ./server nport");
-      exit(0);
-    }
-  sockfd = socket(AF_INET, SOCK_STREAM, 0);
-  /*check if socket is valid*/
-  if(sockfd < 0)
-    {
-      puts("Invalid socket");
-      exit(0);
-    }
-  memset(&srv, 0, sizeof(srv));
-  /*checking the port number given by user*/
-  nport = atoi(argv[1]);
-  if(nport <= 0 || nport > 65535)
-    {
-      puts("Invalid port num");
-      exit(0);
-    }
-  srv.sin_family = AF_INET;
-  srv.sin_port = htons(nport);
-  srv.sin_addr.s_addr = INADDR_ANY;
+	//database stuff
+	char *filename = "Data.db";
+	char *filenamep = "pass.db";
+	char action;
+	struct Connection *conn = Database_open(filename, action);
+	struct Connectionp *connp  = Database_openp(filenamep, action);
+	int id = 0;
+	/*check numer of arguments when starting up server*/
+	if(argc < 2)
+    		{
+			puts("usage: ./server nport");
+			exit(0);
+    		}
+	sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	/*check if socket is valid*/
+	if(sockfd < 0)
+		{
+			puts("Invalid socket");
+			exit(0);
+		}
+	memset(&srv, 0, sizeof(srv));
+	/*checking the port number given by user*/
+	nport = atoi(argv[1]);
+	if(nport <= 0 || nport > 65535)
+		{
+			puts("Invalid port num");
+			exit(0);
+		}
+	srv.sin_family = AF_INET;
+	srv.sin_port = htons(nport);
+	srv.sin_addr.s_addr = INADDR_ANY;
 
-  if(bind(sockfd, (struct sockaddr *)&srv, sizeof(srv)) < 0)
-    {
-      puts("Invalid bind");
-      exit(0);
-    }
-  listen(sockfd, 5);
-  while(1)
-    {
-      scli = sizeof(cli);
-      sockfd2 = accept(sockfd, (struct sockaddr *)&cli, &scli);
-      /*check if connection is valid*/
-      if(sockfd2  < 0)
-	{
-	  puts("Invalid connection");
-	  exit(0);
-	}
-      /*check if fork is valid*/
-      if((pid = fork()) < 0)
-	{
-	  puts("Bad Fork");
-	  exit(0);
-	}
-      if(pid==0)
-	{
-	  close(sockfd);
-	  n = read(sockfd2, buff, MAX-1);
-	  while((strncmp(buff, "create", 6) != 0) && (strncmp(buff,"login",5) != 0))
-	    {
-	      printf(" [###] ERROR: user has input invalid command: %s \n", buff);
-	      n = read(sockfd2, buff, MAX-1);
-	    }
-	  /*if user choose to create a new user go here*/
-	  if (strncmp(buff, "create", 6) == 0)
-	    {
-	      puts("          [!] Creating new user...");
-	      n=read(sockfd2, nick, MAX-1);
-	      nick[n-1]='\0';
-	      printf("     |~| Username: ");
-	      puts(nick);
+	if(bind(sockfd, (struct sockaddr *)&srv, sizeof(srv)) < 0)
+		{
+			puts("Invalid bind");
+			exit(0);
+		}
+	listen(sockfd, 5);
+	while(1)
+		{
+			scli = sizeof(cli);
+			sockfd2 = accept(sockfd, (struct sockaddr *)&cli, &scli);
+			/*check if connection is valid*/
+			if(sockfd2  < 0)
+				{
+					puts("Invalid connection");
+					exit(0);
+				}
+			
+			/*check if fork is valid*/
+			if((pid = fork()) < 0)
+				{
+					puts("Bad Fork");
+					exit(0);
+				}
+			if(pid==0)
+				{
+					close(sockfd);
+	  				n = read(sockfd2, buff, MAX-1);
+	  				while((strncmp(buff, "create", 6) != 0) && (strncmp(buff,"login",5) != 0))
+	    					{
+	     					 printf(" [###] ERROR: user has input invalid command: %s \n", buff);
+	      					 n = read(sockfd2, buff, MAX-1);
+	    					}
+	  				/*if user choose to create a new user go here*/
+	  				if (strncmp(buff, "create", 6) == 0)
+	    				{
+	      					puts("          [!] Creating new user...");
+	      					n=read(sockfd2, nick, MAX-1);
+	      					nick[n-1]='\0';
+	      					printf("     |~| Username: ");
+	      					puts(nick);
 
-	      write (sockfd2, "~", 1);
-	      n=read(sockfd2, password, MAX-1);
-	      password[n-1] = '\0';
-        BF_set_key(key,SIZE,(const unsigned char*)password);
-	      //	  unsigned char md5_pass[16];
-	      printf("     |~| Password: ");
-	      /*hashing master password to compare it with password inside the db*/
-	      //md5_hash(password, md5_pass);
-	      puts(password);
-	      write(sockfd2, "~", 1);
-	      //database check
-	      int i = 0;
-	      int j = 0;
-	      struct Database *db = conn->db;
-		BF_set_key(key,SIZE,(const unsigned char*)password);
-	      for(i = 0; i < MAX_ROWS; i++) {
-		struct Users *cur = &db->rows[i];
+	      					write (sockfd2, "~", 1);
+	      					n=read(sockfd2, password, MAX-1);
+	      					password[n-1] = '\0';
+        
+						BF_set_key(key,SIZE,(const unsigned char*)password);
+	     			 	//	  unsigned char md5_pass[16];
+	      					printf("     |~| Password: ");
+	      				/*hashing master password to compare it with password inside the db*/
+	      				//md5_hash(password, md5_pass);
+	      					puts(password);
+	      					write(sockfd2, "~", 1);
+	      					//database check
+	      					int i = 0;
+	      					int j = 0;
+	      					struct Database *db = conn->db;
+						
+						BF_set_key(key,SIZE,(const unsigned char*)password);
+	      					for(i = 0; i < MAX_ROWS; i++) {
+							struct Users *cur = &db->rows[i];
 
-		if(cur->set) {
-		  j++;
-			}
-			}
-			id = j;
-			Database_set(conn, id, nick, password);
-                Database_write(conn);
+							if(cur->set) {
+		 					j++;
+							             }
+						}
+						id = j;
+						Database_set(conn, id, nick, password);
+                				Database_write(conn);
 		
 	     
 	     
-	      //BF_set_key(key,SIZE,(const unsigned char*)password);
-		char *filenamep = strcat(nick, ".db");
-		char action ='c'; 
-		struct Connectionp *connp = Database_openp(filenamep, action);
-		Database_createp(connp);
-		Database_writep(connp);
+	      					//BF_set_key(key,SIZE,(const unsigned char*)password);
+						char *filenamep = strcat(nick, ".db");
+						char action ='c'; 
+						struct Connectionp *connp = Database_openp(filenamep, action);
+						Database_createp(connp);
+						Database_writep(connp);
 
-	    }
-	  /*nick - username user is going to log in with
-	   check for username in he name of data fiels*/
-	  else if (strncmp(buff, "login", 5) == 0)
-	    {
-	      //	      close(sockfd);
-	      n=read(sockfd2, nick, MAX-1);
-	      nick[n-1]='\0';
-	      printf("     |~| %s",nick);
-	      puts(" has connected to password manager, check for this username in the database");
-	      write (sockfd2, "~", 1);
+	    				}
+	  				/*nick - username user is going to log in with
+	   				check for username in he name of data fiels*/
+	  				else if (strncmp(buff, "login", 5) == 0)
+	    				{
+	  //	      close(sockfd);
+	      					n=read(sockfd2, nick, MAX-1);
+	      					nick[n-1]='\0';
+	      					printf("     |~| %s",nick);
+	      					puts(" has connected to password manager, check for this username in the database");
+	      					write (sockfd2, "~", 1);
 
-	      /*password - user master password used to log user in*/
-	      n=read(sockfd2, password, MAX-1);
-	      password[n-1] = '\0';
-	      //	  unsigned char md5_pass[16];
-	      printf("     |~| Check if password in the database corresponds to this one: ");
-	      /*hashing master password to compare it with password inside the db*/
-	      //md5_hash(password, md5_pass);
-	      puts(password);
-	     // BF_set_key(key,SIZE,(const unsigned char*)password);
+	      					/*password - user master password used to log user in*/
+	      					n=read(sockfd2, password, MAX-1);
+	      					password[n-1] = '\0';
+	      					//	  unsigned char md5_pass[16];
+	      					printf("     |~| Check if password in the database corresponds to this one: ");
+	      					/*hashing master password to compare it with password inside the db*/
+	      					//md5_hash(password, md5_pass);
+	      					puts(password);
+	     					// BF_set_key(key,SIZE,(const unsigned char*)password);
 
-	      write(sockfd2, "~", 1);
-		printf("let me check that");
+	     					write(sockfd2, "~", 1);
+						printf("let me check that");
 		Users_check(conn, nick, password);
-	}
+					}
 	
-	  while(1)
-	    {
-	      close(sockfd);
-	      signal(SIGINT, sfault2);
-	      n=read(sockfd2, buff, MAX-1);
-	      buff[n]='\0';
-	      write (sockfd2, "~", 1);
-	      /*functions available for the user to input
-	       just sample commands*/
-	      if(strncmp(buff, "/change_mpass", 13) == 0)
-		{
-		  //puts ("  ~User requested to change master password...");
-		  puts("          [!] Asking user for existing master password...");
-		  printf("     |~| User entered existing master password: ");
+	  				while(1)
+	    					{
+	      						close(sockfd);
+	      						signal(SIGINT, sfault2);
+	      						n=read(sockfd2, buff, MAX-1);
+	      						buff[n]='\0';
+	      						write (sockfd2, "~", 1);
+	      						/*functions available for the user to input
+	       						just sample commands*/
+	      						if(strncmp(buff, "/change_mpass", 13) == 0)
+								{
+		  					//puts ("  ~User requested to change master password...");
+		  							puts("          [!] Asking user for existing master password...");
+		  							printf("     |~| User entered existing master password: ");
 
-		  n=read(sockfd2, buff2, MAX-1);
-		  buff2[n-1]='\0';
-      BF_ecb_encrypt(buff2,secured,key,BF_DECRYPT);
-		  puts(secured);
-      memset(secured,0,strlen(secured));
-      //secured[0]='\0';
-		  write (sockfd2, "~", 1);
+		  							n=read(sockfd2, buff2, MAX-1);
+		  							buff2[n-1]='\0';
+      									BF_ecb_encrypt(buff2,secured,key,BF_DECRYPT);
+		  							puts(secured);
+      									memset(secured,0,strlen(secured));
+      									//secured[0]='\0';
+		  							write (sockfd2, "~", 1);
 
-		  puts("          [!] Asking user for desired new master password...");
-		  printf("     |~| User entered desired new master password: ");
-		  n=read(sockfd2, password, MAX-1);
+		  							puts("          [!] Asking user for desired new master password...");
+		  							printf("     |~| User entered desired new master password: ");
+		  							n=read(sockfd2, password, MAX-1);
 
-		  password[n-1]='\0';
-      BF_ecb_encrypt(password,secured,key,BF_DECRYPT);
-		  puts(secured);
-		  write (sockfd2, "~", 1);
-		  puts("          [!] Asking user to re-enter desired new master password...");
-		  printf("     |~| User entered desired new master password: ");
-      bzero(buff,strlen(buff));
-		  n=read(sockfd2, buff, MAX-1);
-		  buff[n-1]='\0';
-      //puts(buff);
-      BF_ecb_encrypt(buff,secured2,key,BF_DECRYPT);
+		  							password[n-1]='\0';
+      									BF_ecb_encrypt(password,secured,key,BF_DECRYPT);
+		  							puts(secured);
+		  							write (sockfd2, "~", 1);
+		  							puts("          [!] Asking user to re-enter desired new master password...");
+		  							printf("     |~| User entered desired new master password: ");
+      									bzero(buff,strlen(buff));
+		  							n=read(sockfd2, buff, MAX-1);
+		  							buff[n-1]='\0';
+      								//puts(buff);
+      									BF_ecb_encrypt(buff,secured2,key,BF_DECRYPT);
 
 
 
-		  puts(secured2);
-		  write (sockfd2, "~", 1);
+		  							puts(secured2);
+		  							write (sockfd2, "~", 1);
 
-		  while(strcmp(secured,secured2) != 0)
-		    {
-		      puts(" [###] Error: User's new passwords didn't match");
-		      puts("          [!] Asking user for desired new master password...");
-		      printf("     |~| User entered desired new master password: ");
-		      n=read(sockfd2, password, MAX-1);
+		  							while(strcmp(secured,secured2) != 0)
+		    							{
+		      								puts(" [###] Error: User's new passwords didn't match");
+		      								puts("          [!] Asking user for desired new master password...");
+		      								printf("     |~| User entered desired new master password: ");
+		      								n=read(sockfd2, password, MAX-1);
 
-		      password[n-1]='\0';
-		      puts(password);
-		      write (sockfd2, "~", 1);
+		      								password[n-1]='\0';
+		      								puts(password);
+		      								write (sockfd2, "~", 1);
 
-		      puts("          [!] Asking user to re-enter desired new master password...");
-		      printf("     |~| User entered desired new master password: ");
+		      								puts("          [!] Asking user to re-enter desired new master password...");
+		      								printf("     |~| User entered desired new master password: ");
 
-		      n=read(sockfd2, buff, MAX-1);
-		      buff[n-1]='\0';
-		      puts(buff);
-		      write (sockfd2, "~", 1);
+		      								n=read(sockfd2, buff, MAX-1);
+		      								buff[n-1]='\0';
+		      								puts(buff);
+		      								write (sockfd2, "~", 1);
 		      //		      bzero(buff,MAX);
 		      //bzero(password,MAX);
-		    }
+		    							}
 
 		  puts("          [!] User's master password now changed");
 
