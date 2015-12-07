@@ -283,18 +283,6 @@ void Database_list(struct Connection *conn)
                 }
         }
 }
-void Users_check_final(struct Users *user,const char *username, const char *password)
-{
-        const char *find_user = user->username;
-        const char *find_pass = user->password;
-        if((strcmp((const char*)username,(const char*)find_user)==0) && (strcmp((const char*)password,(const char*)find_pass)==0)){
-printf("hello");	
-}
-}
-
-// Check if the username and password are in the database if yes let the user login
-
-//search the database for the checking of username and password
 
 void Users_check( struct Connection *conn, const char *username, const char *password)
 {
@@ -305,7 +293,11 @@ void Users_check( struct Connection *conn, const char *username, const char *pas
 		struct Users *cur = &db-> rows[i];
 
 		if(cur->set) {
-			Users_check_final(cur, username, password);
+			const char *find_user = cur->username;
+        		const char *find_pass = cur->password;
+        		if((strcmp((const char*)username,(const char*)find_user)==0) && (strcmp((const char*)password,(const char*)find_pass)==0)){
+					printf("hello");
+			}
 		}
 	}
 }
@@ -342,7 +334,7 @@ int main(int argc, char** argv)
 {
 	struct sockaddr_in srv;
 	struct sockaddr_in cli;
-
+	int check=0;
 	int sockfd;
 	int sockfd2;
 	int nport;
@@ -492,15 +484,30 @@ int main(int argc, char** argv)
 	      					n=read(sockfd2, password, MAX-1);
 	      					password[n-1] = '\0';
 	      					//	  unsigned char md5_pass[16];
-	      					printf("     |~| Check if password in the database corresponds to this one: ");
+	      			//printf("     |~| Check if password in the database corresponds to this one: ");
 	      					/*hashing master password to compare it with password inside the db*/
 	      					//md5_hash(password, md5_pass);
-	      					puts(password);
+	      			//puts(password);
 	     					// BF_set_key(key,SIZE,(const unsigned char*)password);
+						printf("let me check that");
+                					
+						int i=0;
+        					struct Database *db = conn->db;
+						//int check =0;
+        					for(i=0; i < MAX_ROWS; i++) {
+                					struct Users *cur = &db-> rows[i];
+
+                					if(cur->set) {
+                        						const char *find_user = cur->username;
+                        						const char *find_pass = cur->password;
+                        						if((strcmp((const char*)username,(const char*)find_user)==0) && (strcmp((const char*)password,(const char*)find_pass)==0)){
+                                        					check = 1;
+                        						}
+                						      }
+        					}			
 
 	     					write(sockfd2, "~", 1);
-						printf("let me check that");
-		Users_check(conn, nick, password);
+					
 					}
 	
 	  				while(1)
@@ -569,92 +576,92 @@ int main(int argc, char** argv)
 		      //bzero(password,MAX);
 		    							}
 
-		  puts("          [!] User's master password now changed");
+		  							puts("          [!] User's master password now changed");
 
-		}
+							}
 
-	      if(strncmp(buff, "/add_acc", 8) == 0)
-		{
-		  puts("          [!] Creating new account...");
-		  n=read(sockfd2, website, MAX-1);
-		  website[n-1]='\0';
-		  printf("     |~| Website: ");
-		  puts(website);
-		  write (sockfd2, "~", 1);
+	      						if(strncmp(buff, "/add_acc", 8) == 0)
+							{
+		  						puts("          [!] Creating new account...");
+		  						n=read(sockfd2, website, MAX-1);
+		  						website[n-1]='\0';
+		  						printf("     |~| Website: ");
+		  						puts(website);
+		  						write (sockfd2, "~", 1);
 
-		  n=read(sockfd2, nick, MAX-1);
-		  nick[n-1]='\0';
-		  printf("     |~| Username: ");
-		  puts(nick);
-		  write (sockfd2, "~", 1);
+		  						n=read(sockfd2, nick, MAX-1);
+		  						nick[n-1]='\0';
+		  						printf("     |~| Username: ");
+		  						puts(nick);
+		  						write (sockfd2, "~", 1);
 
-		  n=read(sockfd2, password, MAX-1);
-		  password[n-1] = '\0';
-		  printf("     |~| Password: ");
-		  BF_ecb_encrypt((unsigned char *)password,enc_pass,key,BF_ENCRYPT);
-		  puts(enc_pass);
-		  write(sockfd2, "~", 1);
-	           //database check
-              int x = 0;
-              int y = 0;
-              struct Databasep *db = connp->db;
+		  						n=read(sockfd2, password, MAX-1);
+		  						password[n-1] = '\0';
+		  						printf("     |~| Password: ");
+		  						BF_ecb_encrypt((unsigned char *)password,enc_pass,key,BF_ENCRYPT);
+		  						puts(enc_pass);
+		  						write(sockfd2, "~", 1);
+	          						 //database check
+              
+								int x = 0;
+              							int y = 0;
+              							struct Databasep *db = connp->db;
 
-              for(x = 0; x < MAX_ROWS; x++) {
-                struct Passwords *cur = &db->rows[x];
+              							for(x = 0; x < MAX_ROWS; x++) {
+                							struct Passwords *cur = &db->rows[x];
 
-                if(cur->set) {
-                 	 y++;
-               		 }
-              		}
-              id = y;
-		  Database_setp(connp, id, website, nick, enc_pass);
-		  Database_writep(connp);
+                							if(cur->set) {
+                 	 							y++;
+               		 						}
+              							}
+              							id = y;
+		  						Database_setp(connp, id, website, nick, enc_pass);
+		  						Database_writep(connp);
 
-		}
+							}			
 
-	      if(strncmp(buff, "/exit", 5) == 0)
-		{
-		  printf("%s", "***");
-		  printf("%s",nick);
-		  puts(" has disconnected");
-		  exit(0);
-		}
-	      if(strncmp(buff, "/help", 5) == 0)
-		{
-		puts("          [!] user has viewed a help menu");
-		}
-	      /*add print whole file of the user db*/
-	      if(strncmp(buff, "/view_passes", 12) == 0)
-		{
-		n=read(sockfd2, website, MAX-1);
-                  website[n-1]='\0';
-                  printf("     |~| Account name requested: ");
-                  puts(website);
-			account = website;
-			int i = 0;
+	      						if(strncmp(buff, "/exit", 5) == 0)
+								{
+		  							printf("%s", "***");
+		  							printf("%s",nick);
+		  							puts(" has disconnected");
+		  							exit(0);
+								}
+	      						if(strncmp(buff, "/help", 5) == 0)
+								{
+									puts("          [!] user has viewed a help menu");
+								}
+	      						/*add print whole file of the user db*/
+	      						if(strncmp(buff, "/view_passes", 12) == 0)
+								{
+									n=read(sockfd2, website, MAX-1);
+                  							website[n-1]='\0';
+                  							printf("     |~| Account name requested: ");
+                  							puts(website);
+									account = website;
+									int i = 0;
                                
-				struct Databasep *db = connp->db;
-                                for(i = 0; i < MAX_ROWS; i++) {
-                                struct Passwords *cur = &db->rows[i];
+									struct Databasep *db = connp->db;
+                                					for(i = 0; i < MAX_ROWS; i++) {
+                                						struct Passwords *cur = &db->rows[i];
 
-                                if(cur->set) {
-                                        const char *find = cur->account;
-                                        if (strcmp((const char*)account,(const char*)find)==0){
-                      printf("%s %s\n",
-                	cur->username, cur->password);
+                                							if(cur->set) {
+                                        							const char *find = cur->account;
+                                        							if (strcmp((const char*)account,(const char*)find)==0){
+                      											printf("%s %s\n",cur->username, cur->password);
 			
-                                    result = cur->password;
-                }
-        }
-}
-                printf("hellowm\n");        
-		puts(result);
-		n = write (sockfd2, result, MAX-6);			
-                  write (sockfd2, "~", 1);
-}
+                                    									result = cur->password;
+                										}
+        										}
+									}
+                       
+									puts(result);
+									n = write (sockfd2, result, MAX-6);			
+                  							write (sockfd2, "~", 1);
+								}
 //		puts("Here are your saved passwords");
 
-	      else if(((strncmp(buff, "/help", 5) != 0) && (strncmp(buff, "/exit", 5) != 0) && (strncmp(buff, "/add_acc", 8) != 0) && (strncmp(buff, "/view_passes", 12) != 0) && (strncmp(buff, "/change_mpass", 13) != 0)))
+	      						else if(((strncmp(buff, "/help", 5) != 0) && (strncmp(buff, "/exit", 5) != 0) && (strncmp(buff, "/add_acc", 8) != 0) && (strncmp(buff, "/view_passes", 12) != 0) && (strncmp(buff, "/change_mpass", 13) != 0)))
 		{
 		  /*if user input unknown command*/
 		  printf(" [###] ERROR: user has input unknown command: %s \n", buff);
