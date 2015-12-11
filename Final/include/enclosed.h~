@@ -10,8 +10,6 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <termios.h>
-#include <unistd.h>
 #include <netdb.h>
 #include <string.h>
 #include <stdio.h>
@@ -20,10 +18,6 @@
 #include "openssl/ssl.h"
 #include "openssl/err.h"
 #include <openssl/md5.h>
-#include <openssl/sha.h>
-#include <openssl/evp.h>
-#include <openssl/e_os2.h>
-#include <stddef.h>
 #include <errno.h>
 /*functions in client*/
 #ifndef _CLIENT_H_
@@ -36,24 +30,7 @@ void notime(int sig);
 void compute_md5(char *str, unsigned char digest[16]);
 #endif
 
-struct Users {
-  int id;
-  int set;
-  char username[MAX_DATA];
-  char password[MAX_DATA];
-};
-
-struct Database {
-  struct Users rows[MAX_ROWS];
-};
-
-struct Connection {
-  FILE *file;
-  struct Database *db;
-};
-int getch();
 void die(const char *message);
-void sha256(char *string, char outputBuffer[65]);
 void Users_print(struct Users *user);
 void Database_load(struct Connection *conn);
 struct Connection *Database_open(const char *filename, char mode);

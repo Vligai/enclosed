@@ -3,8 +3,9 @@
 */
 #ifndef _ENCLOSED_H_
 #define _ENCLOSED_H_
+
+#define MAX 4096
 #include <signal.h>
-#define MAX 2048
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -12,10 +13,13 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "openssl/ssl.h"
-#include "openssl/err.h"
+#include <openssl/ssl.h>
+#include <openssl/err.h>
 #include <openssl/blowfish.h>
 #include <errno.h>
+#include <termios.h>
+#include <unistd.h>
+#include <assert.h>
 /*functions in client*/
 #ifndef _CLIENT_H_
 void sfault1(int sig);

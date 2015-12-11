@@ -37,6 +37,7 @@ clean:
 	-$(RM) *.core
 	-$(RM) *.swp
 	-$(RM) \#*
+	-$(RM) *.exe
 
 fclean:clean all
 
