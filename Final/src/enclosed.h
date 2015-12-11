@@ -4,7 +4,7 @@
 #ifndef _ENCLOSED_H_
 #define _ENCLOSED_H_
 
-#define MAX 2048
+#define MAX 4096
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/socket.h>
